@@ -73,15 +73,12 @@ def skyline(costs, sense=None):
         data = data[max_cols + min_cols].to_numpy()
         mask = skyline_efficient(data.copy())
 
-        if len(key) == 1:
+        if not isinstance(key, tuple):
             insert_mask = df[diff_cols] == key
         else:
             insert_mask = (df[diff_cols] == key).all(axis=1)
 
         insert_mask = insert_mask.to_numpy().ravel()
-
-        print(insert_mask)
-        print(mask)
 
         is_efficient[insert_mask] = mask
 
