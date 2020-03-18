@@ -39,12 +39,12 @@ def get_times(observations, cost_func, algorithm, num_runs):
 
         result = np.median(runs)
         yield result
-        if result > 2:  # If it takes too long, stop
+        if result > 1:  # If it takes too long, stop
             return
 
 
 observations = list(range(1, 10))
-num_runs = 10
+num_runs = 2
 
 plt.figure(figsize=(9, 2.5))
 
@@ -90,7 +90,57 @@ plt.xticks(observations[:max_times], ["$10^{}$".format(i) for i in observations[
 
 
 plt.tight_layout()
-plt.savefig("times_objectives.png".format(objectives), dpi=100)
+plt.savefig("times_pareto_front.png".format(objectives), dpi=100)
+plt.show()
+
+# =================================================================================
+from paretoset.algorithms_numpy import pareto_rank_NSGA2, pareto_rank_naive
+
+plt.figure(figsize=(9, 2.5))
+
+objectives = 3
+plt.subplot(1, 2, 1)
+max_times = 0
+plt.title("pareto_rank_NSGA2 with {} objectives".format(objectives, num_runs))
+times = list(get_times(observations, generate_problem_randn, pareto_rank_NSGA2, num_runs))
+max_times = max(max_times, len(times))
+plt.semilogy(observations[: len(times)], times, "-o", ms=3, label="Gaussian")
+
+times = list(get_times(observations, generate_problem_simplex, paretoset, num_runs))
+max_times = max(max_times, len(times))
+plt.semilogy(observations[: len(times)], times, "-o", ms=3, label="Uniform on simplex")
+
+
+plt.legend(loc="lower right").set_zorder(50)
+plt.xlabel("Number of observations (rows)")
+plt.ylabel("Time (seconds)")
+plt.grid(True, alpha=0.5, ls="--", zorder=0)
+# plt.yticks(times[:max_times])
+plt.xticks(observations[:max_times], ["$10^{}$".format(i) for i in observations[:max_times]])
+
+
+objectives = 3
+plt.subplot(1, 2, 2)
+max_times = 0
+plt.title("pareto_rank_naive with {} objectives".format(objectives, num_runs))
+times = list(get_times(observations, generate_problem_randn, pareto_rank_naive, num_runs))
+max_times = max(max_times, len(times))
+plt.semilogy(observations[: len(times)], times, "-o", ms=3, label="Gaussian")
+
+times = list(get_times(observations, generate_problem_simplex, paretoset, num_runs))
+max_times = max(max_times, len(times))
+plt.semilogy(observations[: len(times)], times, "-o", ms=3, label="Uniform on simplex")
+
+
+plt.legend(loc="lower right").set_zorder(50)
+plt.xlabel("Number of observations (rows)")
+plt.grid(True, alpha=0.5, ls="--", zorder=0)
+# plt.yticks(times[:max_times])
+plt.xticks(observations[:max_times], ["$10^{}$".format(i) for i in observations[:max_times]])
+
+
+plt.tight_layout()
+plt.savefig("times_pareto_rank.png".format(objectives), dpi=100)
 plt.show()
 
 
@@ -175,7 +225,7 @@ def BNL_numpy(costs):
 
 
 @numba.jit(nopython=True, fastmath=True)
-def dominates(a, b, size):
+def dominates(a, b):
     """Does a dominate b?"""
     better = False
     for a_i, b_i in zip(a, b):
