@@ -31,7 +31,7 @@ plt.xlabel("Price")
 plt.ylabel("Distance to the beach")
 plt.grid(True, alpha=0.5, ls="--", zorder=0)
 plt.tight_layout()
-plt.savefig("example_hotels.png", dpi=200)
+plt.savefig("example_hotels.png", dpi=50)
 plt.show()
 
 
@@ -87,7 +87,7 @@ for (group_salespeople, group_performers) in zip(salespeople_by_dept, performers
     subplot += 1
 
 plt.tight_layout()
-plt.savefig("example_salespeople.png", dpi=200)
+plt.savefig("example_salespeople.png", dpi=100)
 plt.show()
 
 
@@ -139,5 +139,5 @@ plt.xticks(fontsize=0)
 plt.yticks(fontsize=0)
 plt.grid(True, alpha=0.5, ls="--", zorder=0)
 plt.tight_layout()
-plt.savefig("example_optimization.png", dpi=200)
+plt.savefig("example_optimization.png", dpi=150)
 plt.show()
