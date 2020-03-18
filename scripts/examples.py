@@ -13,7 +13,7 @@ skyline_hotels = hotels[mask]
 # ==================================================
 import matplotlib.pyplot as plt
 
-plt.figure(figsize=(6, 3))
+plt.figure(figsize=(5.5, 3))
 
 plt.title("Skyline hotels (Pareto-efficient hotels)")
 
@@ -31,7 +31,7 @@ plt.xlabel("Price")
 plt.ylabel("Distance to the beach")
 plt.grid(True, alpha=0.5, ls="--", zorder=0)
 plt.tight_layout()
-plt.savefig("example_hotels.png", dpi=50)
+plt.savefig("example_hotels.png", dpi=100)
 plt.show()
 
 
@@ -56,7 +56,7 @@ top_performers = salespeople[mask]
 # ==================================================
 import matplotlib.pyplot as plt
 
-plt.figure(figsize=(8, 3))
+plt.figure(figsize=(7, 3))
 # plt.suptitle("Salespeople eligible for a raise (high sales, low salary)", y=1.00)
 
 salespeople_by_dept = salespeople.groupby("department")
@@ -116,7 +116,7 @@ efficient_solutions = [solution for (solution, m) in zip(solutions, mask) if m]
 # ==================================================
 import matplotlib.pyplot as plt
 
-plt.figure(figsize=(6, 3))
+plt.figure(figsize=(5.5, 3))
 
 plt.title("Objective value space and efficient solutions")
 
@@ -139,5 +139,5 @@ plt.xticks(fontsize=0)
 plt.yticks(fontsize=0)
 plt.grid(True, alpha=0.5, ls="--", zorder=0)
 plt.tight_layout()
-plt.savefig("example_optimization.png", dpi=150)
+plt.savefig("example_optimization.png", dpi=100)
 plt.show()
