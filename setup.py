@@ -13,11 +13,15 @@ from setuptools import setup, find_packages
 # To use a consistent encoding
 from codecs import open
 from os import path
-from skyline import __version__
 
-VERSION = __version__
+import re
+import os
 
-HERE = path.abspath(path.dirname(__file__))
+HERE = os.path.abspath(os.path.dirname(__file__))
+
+# Get version
+with open(os.path.join(HERE, "paretoset/__init__.py"), encoding="utf-8") as file:
+    VERSION = re.search(r"__version__ = \"(.*?)\"", file.read()).group(1)
 
 
 def read(fname):
@@ -25,19 +29,19 @@ def read(fname):
 
 
 setup(
-    name="skyline",
+    name="paretoset",
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
     version=VERSION,
-    description="Skyline operator/query for computing the Pareto (non-dominated) frontier.",
+    description="Compute the Pareto (non-dominated) set, i.e., skyline operator/query.",
     long_description=read("README.md"),
     long_description_content_type="text/markdown",
     # The project's main homepage.
-    url="https://github.com/tommyod/skyline",
+    url="https://github.com/tommyod/paretoset",
     # Author details
     author="tommyod",
-    author_email="tommy.odland@gma...",
+    author_email="tommy.odland@gmail.com",
     # Choose your license
     license="MIT",
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
@@ -60,7 +64,7 @@ setup(
     # You can just specify the packages manually HERE if your project is
     # simple. Or you can use find_packages().
     packages=find_packages(".", exclude=["contrib", "docs", "tests"]),
-    package_dir={"skyline": "skyline"},
+    package_dir={"paretoset": "paretoset"},
     # Alternatively, if you want to distribute just a my_module.py, uncomment
     # this:
     #   py_modules=["my_module"],
