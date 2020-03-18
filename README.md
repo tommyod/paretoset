@@ -10,17 +10,17 @@ There are two common ways to optimize a function of several variables:
 The disadvantage of scalarization is that objectives must be weighted a priori.
 The paretoset query returns every value that could be obtained by scalarization, but also values that could not have been found by scalarization.
 
-## Examples - paretoset queries for data analysis and insight
+## Example - Skyline queries for data analysis and insight
 
-The folllowing example is from the paper "*The paretoset Operator*" by Börzsönyi et al.
+The folllowing example is from the paper "*The Skyline Operator*" by Börzsönyi et al.
 
 Suppose you are going on holiday and you are looking for a hotel that is cheap and close to the beach. 
 These two goals are complementary as the hotels near the beach tend to be more expensive. 
 
 The database system at your travel agents' is unable to decide which hotel is best for you, but it can at least present you all interesting hotels. 
 Interesting are all hotels that are not worse than any other hotel in both dimensions. 
-We call this set of interesting hotels the *paretoset*. 
-From the paretoset, you can now your final decision, thereby weighing your personal preferences for price and distance to the beach.
+We call this set of interesting hotels the *skyline*. 
+From the skyline, you can now your final decision, thereby weighing your personal preferences for price and distance to the beach.
 
 ```python
 from paretoset import paretoset
@@ -54,7 +54,7 @@ top_performers = salespeople[mask]
 
 ![](https://github.com/tommyod/paretoset/blob/initial/scripts/example_salespeople.png)
 
-## Examples - Pareto efficient solutions (non-dominated front) in multiobjective optimization
+## Example - Pareto efficient solutions in multiobjective optimization
 
 Suppose you wish to query a database for salespeople that might be eligible for a raise.
 To find top performers (low salary, but high sales) for every department:

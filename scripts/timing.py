@@ -39,7 +39,7 @@ def get_times(observations, cost_func, algorithm, num_runs):
 
         result = np.median(runs)
         yield result
-        if result > 1:  # If it takes too long, stop
+        if result > 2:  # If it takes too long, stop
             return
 
 
@@ -48,7 +48,7 @@ num_runs = 10
 
 plt.figure(figsize=(9, 2.5))
 
-objectives = 2
+objectives = 3
 plt.subplot(1, 2, 1)
 max_times = 0
 plt.title("Pareto set with {} objectives".format(objectives, num_runs))
@@ -61,14 +61,15 @@ max_times = max(max_times, len(times))
 plt.semilogy(observations[: len(times)], times, "-o", ms=3, label="Uniform on simplex")
 
 
-plt.legend().set_zorder(50)
+plt.legend(loc="lower right").set_zorder(50)
 plt.xlabel("Number of observations (rows)")
 plt.ylabel("Time (seconds)")
 plt.grid(True, alpha=0.5, ls="--", zorder=0)
+#plt.yticks(times[:max_times])
 plt.xticks(observations[:max_times], ["$10^{}$".format(i) for i in observations[:max_times]])
 
 
-objectives = 8
+objectives = 9
 plt.subplot(1, 2, 2)
 max_times = 0
 plt.title("Pareto set with {} objectives".format(objectives, num_runs))
@@ -81,9 +82,10 @@ max_times = max(max_times, len(times))
 plt.semilogy(observations[: len(times)], times, "-o", ms=3, label="Uniform on simplex")
 
 
-plt.legend().set_zorder(50)
+plt.legend(loc="lower right").set_zorder(50)
 plt.xlabel("Number of observations (rows)")
 plt.grid(True, alpha=0.5, ls="--", zorder=0)
+#plt.yticks(times[:max_times])
 plt.xticks(observations[:max_times], ["$10^{}$".format(i) for i in observations[:max_times]])
 
 
