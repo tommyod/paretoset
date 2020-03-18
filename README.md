@@ -80,12 +80,6 @@ efficient_solutions = [solution for (solution, m) in zip(solutions, mask) if m]
 
 ![](scripts/example_optimization.png)
 
-
-
-
-
-
-
 ## Installation
 
 The software is available through GitHub, and through [PyPI](https://pypi.org/project/skyline/).
