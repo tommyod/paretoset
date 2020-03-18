@@ -17,8 +17,13 @@ before_script:
     - # mypy paretoset/*.py --ignore-missing-imports --show-error-context
 
 script:
-    - pytest --doctest-modules -v paretoset
+    - install -r requirements.txt
+    - python setup.py develop sdist
+    - pytest --doctest-modules paretoset
     - echo "$TRAVIS_TAG"
+    - echo "$TRAVIS_PULL_REQUEST"
+    - echo "TRAVIS_PULL_REQUEST_BRANCH"
+    - echo "TRAVIS_BRANCH"
     - if [ -n "$TRAVIS_TAG" ]; then
       pip install twine;
       python setup.py sdist bdist_wheel;
