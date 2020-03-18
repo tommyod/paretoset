@@ -1,5 +1,3 @@
-
-
 from skyline import skyline
 import numpy as np
 
@@ -17,16 +15,15 @@ allowed_min_values = [min, "min", "MIN", "minimum", "Min"]
 allowed_max_values = [max, "max", "MAX", "maximum", "Max"]
 
 
-
 class TestReadmeExamples:
-
     def test_example_hotels(self):
         """Example in the readme."""
         from skyline import skyline
         import pandas as pd
 
         hotels = pd.DataFrame(
-            {"price": [50, 53, 62, 87, 83, 39, 60, 44], "distance_to_beach": [13, 21, 19, 13, 5, 22, 22, 25]})
+            {"price": [50, 53, 62, 87, 83, 39, 60, 44], "distance_to_beach": [13, 21, 19, 13, 5, 22, 22, 25]}
+        )
         mask = skyline(hotels, sense=["min", "min"])
         skyline_hotels = hotels[mask]
 
@@ -65,11 +62,7 @@ class TestReadmeExamples:
         efficient_solutions = [solution for (solution, m) in zip(solutions, mask) if m]
 
 
-
-
 class TestNumPyInputs:
-
-
     def test_numpy_no_args(self):
         costs = np.random.RandomState(123).randn(5, 2)
         costs_before = costs.copy()
@@ -101,8 +94,6 @@ class TestNumPyInputs:
 
 
 class TestPandasInputs:
-
-
     def test_pandas_no_args(self):
         costs = np.random.RandomState(123).randn(5, 2)
         df = pd.DataFrame(costs, columns=["a", "b"])
@@ -112,7 +103,6 @@ class TestPandasInputs:
         assert isinstance(mask, np.ndarray)
         assert mask.dtype == np.bool
         assert (df == df_before).all().all()
-
 
     def test_pandas_with_args(self):
         costs = np.random.RandomState(123).randn(5, 2)
@@ -134,4 +124,3 @@ class TestPandasInputs:
         assert isinstance(mask, np.ndarray)
         assert mask.dtype == np.bool
         assert (df == df_before).all().all()
-
