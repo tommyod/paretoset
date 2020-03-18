@@ -13,7 +13,7 @@ skyline_hotels = hotels[mask]
 # ==================================================
 import matplotlib.pyplot as plt
 
-plt.figure(figsize=(5.5, 3))
+plt.figure(figsize=(6, 2.5))
 
 plt.title("Skyline hotels (Pareto-efficient hotels)")
 
@@ -56,7 +56,7 @@ top_performers = salespeople[mask]
 # ==================================================
 import matplotlib.pyplot as plt
 
-plt.figure(figsize=(7, 3))
+plt.figure(figsize=(7, 2.5))
 # plt.suptitle("Salespeople eligible for a raise (high sales, low salary)", y=1.00)
 
 salespeople_by_dept = salespeople.groupby("department")
@@ -116,7 +116,7 @@ efficient_solutions = [solution for (solution, m) in zip(solutions, mask) if m]
 # ==================================================
 import matplotlib.pyplot as plt
 
-plt.figure(figsize=(5.5, 3))
+plt.figure(figsize=(6, 2.5))
 
 plt.title("Objective value space and efficient solutions")
 
