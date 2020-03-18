@@ -5,15 +5,101 @@ Created on Sun Mar 15 19:09:47 2020
 
 @author: tommy
 """
-
-import numpy as np
-
-
+import time
 import numpy as np
 import numba
+import matplotlib.pyplot as plt
 
-from paretoset.algorithms_numpy import skyline_naive, skyline_efficient
-from paretoset.algorithms_numba import skyline_efficient_jit
+from paretoset import paretoset
+
+
+def generate_problem_randn(n, d):
+    return np.random.randn(n, d)
+
+def generate_problem_simplex(n, d):
+    # https://cs.stackexchange.com/questions/3227/uniform-sampling-from-a-simplex
+    data = np.random.randn(n, d-1)
+    data = np.hstack((np.zeros(n).reshape(-1, 1), data, np.ones(n).reshape(-1, 1)))
+    diffs = data[:, 1:] - data[:, :-1]
+    assert diffs.shape == (n, d)
+    return diffs
+
+def get_times(observations, cost_func, algorithm, num_runs):
+
+    for num_obs in observations:
+        num_obs = 10 ** num_obs
+        costs = cost_func(num_obs, objectives)
+        runs = []
+        for run in range(num_runs):
+            start_time = time.time()
+            algorithm(costs)
+            runs.append(time.time() - start_time)
+
+        result = np.median(runs)
+        yield result
+        if result > 1: # If it takes too long, stop
+            return
+
+
+observations = list(range(1, 10))
+num_runs = 10
+
+plt.figure(figsize=(9, 2.5))
+
+objectives = 2
+plt.subplot(1, 2, 1)
+max_times = 0
+plt.title("Pareto set with {} objectives".format(objectives, num_runs))
+times = list(get_times(observations, generate_problem_randn, paretoset, num_runs))
+max_times = max(max_times, len(times))
+plt.semilogy(observations[:len(times)], times, "-o", ms=3, label="Gaussian")
+
+times = list(get_times(observations, generate_problem_simplex, paretoset, num_runs))
+max_times = max(max_times, len(times))
+plt.semilogy(observations[:len(times)], times, "-o", ms=3, label="Uniform on simplex")
+
+
+plt.legend().set_zorder(50)
+plt.xlabel("Number of observations (rows)")
+plt.ylabel("Time (seconds)")
+plt.grid(True, alpha=0.5, ls="--", zorder=0)
+plt.xticks(observations[:max_times], ["$10^{}$".format(i) for i in observations[:max_times]])
+
+
+objectives = 8
+plt.subplot(1, 2, 2)
+max_times = 0
+plt.title("Pareto set with {} objectives".format(objectives, num_runs))
+times = list(get_times(observations, generate_problem_randn, paretoset, num_runs))
+max_times = max(max_times, len(times))
+plt.semilogy(observations[:len(times)], times, "-o", ms=3, label="Gaussian")
+
+times = list(get_times(observations, generate_problem_simplex, paretoset, num_runs))
+max_times = max(max_times, len(times))
+plt.semilogy(observations[:len(times)], times, "-o", ms=3, label="Uniform on simplex")
+
+
+plt.legend().set_zorder(50)
+plt.xlabel("Number of observations (rows)")
+plt.grid(True, alpha=0.5, ls="--", zorder=0)
+plt.xticks(observations[:max_times], ["$10^{}$".format(i) for i in observations[:max_times]])
+
+
+plt.tight_layout()
+plt.savefig("times_objectives.png".format(objectives), dpi=100)
+plt.show()
+
+
+
+
+
+1/0
+
+
+
+
+
+
 
 
 def is_pareto_efficient2(costs):

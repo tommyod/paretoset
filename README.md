@@ -1,13 +1,13 @@
 # paretoset [![Build Status](https://travis-ci.com/tommyod/paretoset.svg?branch=master)](https://travis-ci.com/tommyod/paretoset) [![PyPI version](https://badge.fury.io/py/paretoset.svg)](https://pypi.org/project/paretoset/)[![Downloads](https://pepy.tech/badge/paretoset)](https://pepy.tech/project/paretoset) [![Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
-paretoset operator/query for computing the Pareto (non-dominated) frontier.
+Compute the Pareto (non-dominated) set, i.e., skyline operator/query.
 
 There are two common ways to optimize a function of several variables: 
 
 - **Scalarization** combines the variables using a weighted sum: this gives a linear ordering and *single a minimum value*.
-- **paretoset query** returns the Pareto (non-dominated) frontier: his gives a partial ordering and *a set of minimal values*.
+- The **Pareto set** contains efficient (non-dominated) solutions: this gives a partial ordering and *a set of minimal values*.
 
-The disadvantage of scalarization is that objectives must be weighted beforehand.
+The disadvantage of scalarization is that objectives must be weighted a priori.
 The paretoset query returns every value that could be obtained by scalarization, but also values that could not have been found by scalarization.
 
 ## Examples - paretoset queries for data analysis and insight
@@ -95,4 +95,10 @@ You are very welcome to scrutinize the code and make pull requests if you have s
 Your submitted code must be PEP8 compliant, and all tests must pass.
 
 ## Performance
+
+The graph below shows how long it takes to compute the Pareto set.
+Gaussian data has only a few observations in the Pareto set, while uniformly distributed data on a simplex has every observations in the Pareto set.
+
+![](https://github.com/tommyod/paretoset/blob/initial/scripts/times_objectives.png)
+
 
