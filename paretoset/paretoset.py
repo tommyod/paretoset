@@ -1,34 +1,47 @@
 import numpy as np
 
 from paretoset.algorithms_numpy import paretoset_efficient
+from paretoset.utils import user_has_package, validate_inputs
 
 import collections.abc
 
-try:
+if user_has_package("pandas"):
     import pandas as pd
 
-    USER_HAS_PANDAS = True
-except ImportError:
-    USER_HAS_PANDAS = False
 
-try:
-    import numba
-
-    USER_HAS_NUMBA = True
-except ImportError:
-    USER_HAS_NUMBA = False
+def paretoset(costs, sense=None, use_numba=True):
+    """Return mask indicating the Pareto set of a NumPy array or pandas DataFrame.
 
 
-def paretoset(costs, sense=None):
+    Parameters
+    ----------
+    costs : np.ndarray or pd.DataFrame
+        Array or DataFrame of shape (observations, objectives).
+    sense : collection
+        List or tuple with `min` (default), `max` or `diff`. If None, minimization is assumed
+        for every objective (column). The parameter `diff` indicates that each observation must
+        be different for that objective.
+    use_numba : bool
+        If True, numba will be used if it`s installed.
 
-    # The input is an np.ndarray
-    if isinstance(costs, np.ndarray):
-        if costs.ndim != 2:
-            raise ValueError("Array must have shape (observations, objectives).")
-    elif USER_HAS_PANDAS and isinstance(costs, pd.DataFrame):
-        costs = costs.to_numpy()
-    else:
-        TypeError("`costs` must be a NumPy ndarray or pandas DataFrame.")
+    Returns
+    -------
+    mask : np.ndarray
+        Boolean mask with `True` for observations in the Pareto set.
+
+
+    Examples
+    --------
+    >>> from paretoset import paretoset
+    >>> import numpy as np
+    >>> costs = np.array([[2, 0], [1, 1], [0, 2], [3, 3]])
+    >>> paretoset(costs)
+    array([ True,  True,  True, False])
+    >>> paretoset(costs, sense=["min", "max"])
+    array([False, False,  True,  True])
+    """
+
+    costs, sense = validate_inputs(costs=costs, sense=sense)
 
     # TODO: INF and NaN
 
@@ -37,29 +50,15 @@ def paretoset(costs, sense=None):
 
     n_costs, n_objectives = costs.shape
 
-    if not isinstance(sense, collections.abc.Sequence):
-        raise TypeError("`sense` parameter must be a sequence (e.g. list).")
-
-    if not len(sense) == n_objectives:
-        raise ValueError("Length of `sense` must match second dimensions (i.e. columns).")
-
-    # Convert functions "min" and "max" to their names
-    sense = [s.__name__ if callable(s) else s for s in sense]
-    if not all(isinstance(s, str) for s in sense):
-        raise TypeError("`sense` parameter must be a sequence of strings.")
-    sense = [s.lower() for s in sense]
-
-    # Verify that the strings are of correct format
-    valid = ["min", "minimum", "max", "maximum", "diff", "difference"]
-    if not all(s in valid for s in sense):
-        raise TypeError("`sense` must be one of: {}".format(valid))
-
     # Take a copy since we will be changing the object
     costs = costs.copy()
 
     diff_cols = [i for i in range(n_objectives) if sense[i] in ("diff", "difference")]
     max_cols = [i for i in range(n_objectives) if sense[i] in ("max", "maximum")]
     min_cols = [i for i in range(n_objectives) if sense[i] in ("min", "minimum")]
+
+    if diff_cols and not user_has_package("pandas"):
+        raise ModuleNotFoundError("The `diff` sense requires pandas. See: https://pandas.pydata.org/")
 
     for col in max_cols:
         costs[:, col] = -costs[:, col]

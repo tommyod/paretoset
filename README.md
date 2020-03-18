@@ -32,7 +32,7 @@ mask = paretoset(hotels, sense=["min", "min"])
 paretoset_hotels = hotels[mask]
 ```
 
-![](https://github.com/tommyod/paretoset/blob/initial/scripts/example_hotels.png)
+![](https://github.com/tommyod/paretoset/blob/master/scripts/example_hotels.png)
 
 Suppose you wish to query a database for salespeople that might be eligible for a raise.
 To find top performers (low salary, but high sales) for every department:
@@ -52,7 +52,7 @@ mask = paretoset(salespeople, sense=["min", "max", "diff"])
 top_performers = salespeople[mask]
 ```
 
-![](https://github.com/tommyod/paretoset/blob/initial/scripts/example_salespeople.png)
+![](https://github.com/tommyod/paretoset/blob/master/scripts/example_salespeople.png)
 
 ## Example - Pareto efficient solutions in multiobjective optimization
 
@@ -78,7 +78,7 @@ mask = paretoset(objective_values_array, sense=[min, min])
 efficient_solutions = [solution for (solution, m) in zip(solutions, mask) if m]
 ```
 
-![](https://github.com/tommyod/paretoset/blob/initial/scripts/example_optimization.png)
+![](https://github.com/tommyod/paretoset/blob/master/scripts/example_optimization.png)
 
 ## Installation
 
@@ -99,6 +99,6 @@ Your submitted code must be PEP8 compliant, and all tests must pass.
 The graph below shows how long it takes to compute the Pareto set.
 Gaussian data has only a few observations in the Pareto set, while uniformly distributed data on a simplex has every observations in the Pareto set.
 
-![](https://github.com/tommyod/paretoset/blob/initial/scripts/times_objectives.png)
+![](https://github.com/tommyod/paretoset/blob/master/scripts/times_objectives.png)
 
 
