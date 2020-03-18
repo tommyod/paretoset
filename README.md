@@ -17,7 +17,7 @@ The folllowing example is from the paper "*The paretoset Operator*" by Börzsön
 Suppose you are going on holiday and you are looking for a hotel that is cheap and close to the beach. 
 These two goals are complementary as the hotels near the beach tend to be more expensive. 
 
->The database system at your travel agents' is unable to decide which hotel is best for you, but it can at least present you all interesting hotels. 
+The database system at your travel agents' is unable to decide which hotel is best for you, but it can at least present you all interesting hotels. 
 Interesting are all hotels that are not worse than any other hotel in both dimensions. 
 We call this set of interesting hotels the *paretoset*. 
 From the paretoset, you can now your final decision, thereby weighing your personal preferences for price and distance to the beach.
@@ -32,7 +32,7 @@ mask = paretoset(hotels, sense=["min", "min"])
 paretoset_hotels = hotels[mask]
 ```
 
-![](scripts/example_hotels.png)
+![](https://github.com/tommyod/paretoset/blob/initial/scripts/example_hotels.png)
 
 Suppose you wish to query a database for salespeople that might be eligible for a raise.
 To find top performers (low salary, but high sales) for every department:
@@ -52,7 +52,7 @@ mask = paretoset(salespeople, sense=["min", "max", "diff"])
 top_performers = salespeople[mask]
 ```
 
-![](scripts/example_salespeople.png)
+![](https://github.com/tommyod/paretoset/blob/initial/scripts/example_salespeople.png)
 
 ## Examples - Pareto efficient solutions (non-dominated front) in multiobjective optimization
 
@@ -78,7 +78,7 @@ mask = paretoset(objective_values_array, sense=[min, min])
 efficient_solutions = [solution for (solution, m) in zip(solutions, mask) if m]
 ```
 
-![](scripts/example_optimization.png)
+![](https://github.com/tommyod/paretoset/blob/initial/scripts/example_optimization.png)
 
 ## Installation
 
