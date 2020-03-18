@@ -17,7 +17,7 @@ def any_jitted(costs, cost):
 
 
 @numba.jit(nopython=True)
-def skyline_efficient_jit(costs):
+def paretoset_jit(costs):
     """
     Find the pareto-efficient points
     :param costs: An (n_points, n_costs) array

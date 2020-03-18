@@ -1,4 +1,4 @@
-from skyline import skyline
+from paretoset import paretoset
 import numpy as np
 
 
@@ -18,18 +18,18 @@ allowed_max_values = [max, "max", "MAX", "maximum", "Max"]
 class TestReadmeExamples:
     def test_example_hotels(self):
         """Example in the readme."""
-        from skyline import skyline
+        from paretoset import paretoset
         import pandas as pd
 
         hotels = pd.DataFrame(
             {"price": [50, 53, 62, 87, 83, 39, 60, 44], "distance_to_beach": [13, 21, 19, 13, 5, 22, 22, 25]}
         )
-        mask = skyline(hotels, sense=["min", "min"])
-        skyline_hotels = hotels[mask]
+        mask = paretoset(hotels, sense=["min", "min"])
+        effi_hotels = hotels[mask]
 
     def test_example_salespeople(self):
         """Example in the readme."""
-        from skyline import skyline
+        from paretoset import paretoset
         import pandas as pd
 
         salespeople = pd.DataFrame(
@@ -39,12 +39,12 @@ class TestReadmeExamples:
                 "department": ["c", "c", "c", "b", "b", "a", "a", "c", "b", "a", "b", "a"],
             }
         )
-        mask = skyline(salespeople, sense=["min", "max", "diff"])
+        mask = paretoset(salespeople, sense=["min", "max", "diff"])
         top_performers = salespeople[mask]
 
     def test_example_optimization(self):
         """Example in the readme."""
-        from skyline import skyline
+        from paretoset import paretoset
         import numpy as np
         from collections import namedtuple
 
@@ -56,7 +56,7 @@ class TestReadmeExamples:
 
         # Create an array of shape (solutions, objectives) and compute the non-dominated set
         objective_values_array = np.vstack([s.objective_values for s in solutions])
-        mask = skyline(objective_values_array, sense=[min, min])
+        mask = paretoset(objective_values_array, sense=[min, min])
 
         # Filter the list of solutions, keeping only the non-dominated solutions
         efficient_solutions = [solution for (solution, m) in zip(solutions, mask) if m]
@@ -66,7 +66,7 @@ class TestNumPyInputs:
     def test_numpy_no_args(self):
         costs = np.random.RandomState(123).randn(5, 2)
         costs_before = costs.copy()
-        mask = skyline(costs)
+        mask = paretoset(costs)
 
         assert isinstance(mask, np.ndarray)
         assert mask.dtype == np.bool
@@ -75,7 +75,7 @@ class TestNumPyInputs:
     def test_numpy_with_args(self):
         costs = np.random.RandomState(123).randn(5, 2)
         costs_before = costs.copy()
-        mask = skyline(costs, sense=["min", "max"])
+        mask = paretoset(costs, sense=["min", "max"])
 
         assert isinstance(mask, np.ndarray)
         assert mask.dtype == np.bool
@@ -87,8 +87,8 @@ class TestNumPyInputs:
         costs = np.random.RandomState(123).randn(10, 3)
         costs_before = costs.copy()
 
-        mask1 = skyline(costs, sense=["min", "max", "diff"])
-        mask2 = skyline(costs, sense=[sense_min, sense_max, "diff"])
+        mask1 = paretoset(costs, sense=["min", "max", "diff"])
+        mask2 = paretoset(costs, sense=[sense_min, sense_max, "diff"])
         assert np.all(mask1 == mask2)
         assert np.allclose(costs, costs_before)
 
@@ -98,7 +98,7 @@ class TestPandasInputs:
         costs = np.random.RandomState(123).randn(5, 2)
         df = pd.DataFrame(costs, columns=["a", "b"])
         df_before = df.copy()
-        mask = skyline(df)
+        mask = paretoset(df)
 
         assert isinstance(mask, np.ndarray)
         assert mask.dtype == np.bool
@@ -108,7 +108,7 @@ class TestPandasInputs:
         costs = np.random.RandomState(123).randn(5, 2)
         df = pd.DataFrame(costs, columns=["a", "b"])
         df_before = df.copy()
-        mask = skyline(df, sense=[min, max])
+        mask = paretoset(df, sense=[min, max])
 
         assert isinstance(mask, np.ndarray)
         assert mask.dtype == np.bool
@@ -119,7 +119,7 @@ class TestPandasInputs:
         df = pd.DataFrame(costs, columns=["a", "b"])
         df["department"] = ["a", "b", "c"] * 8
         df_before = df.copy()
-        mask = skyline(df, sense=["min", "max", "diff"])
+        mask = paretoset(df, sense=["min", "max", "diff"])
 
         assert isinstance(mask, np.ndarray)
         assert mask.dtype == np.bool

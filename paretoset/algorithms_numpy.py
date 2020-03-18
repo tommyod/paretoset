@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def skyline_naive(costs):
+def paretoset_naive(costs):
     """Naive implementation.
 
     Parameters
@@ -10,7 +10,7 @@ def skyline_naive(costs):
 
     Returns
     -------
-    mask : (np.ndarray) Boolean array indicating the skyline.
+    mask : (np.ndarray) Boolean array indicating the paretoset.
 
     """
     n_costs, n_objectives = costs.shape
@@ -32,7 +32,7 @@ def skyline_naive(costs):
     return is_efficient
 
 
-def skyline_efficient(costs):
+def paretoset_efficient(costs):
     """
 
     Parameters
@@ -84,7 +84,7 @@ def pareto_rank_naive(costs):
     while np.sum(remaining) > 0:
 
         # Mark the costs that have rank `i`
-        frontier_mask = skyline_naive(costs[remaining])
+        frontier_mask = paretoset_efficient(costs[remaining])
 
         # Processed costs in this iteration (not processed already, and in the frontier)
         processed[np.logical_not(processed)] = frontier_mask

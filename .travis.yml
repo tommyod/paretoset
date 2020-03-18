@@ -29,10 +29,10 @@ before_install:
 before_script:
     - flake8 --show-source --ignore=F811,W293,W391,W292,W291,E252,W503,E203 --max-line-length=120 --exclude='conf.py,__init__.py'
     - black . --check -l 120
-    - mypy skyline/*.py --ignore-missing-imports --show-error-context
+    - mypy paretoset/*.py --ignore-missing-imports --show-error-context
 
 script:
-    - pytest --doctest-modules -v skyline
+    - pytest --doctest-modules -v paretoset
     - echo "$TRAVIS_TAG"
     - if [ -n "$TRAVIS_TAG" ]; then
       pip install twine;

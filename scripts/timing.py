@@ -12,8 +12,8 @@ import numpy as np
 import numpy as np
 import numba
 
-from skyline.algorithms_numpy import skyline_naive, skyline_efficient
-from skyline.algorithms_numba import skyline_efficient_jit
+from paretoset.algorithms_numpy import skyline_naive, skyline_efficient
+from paretoset.algorithms_numba import skyline_efficient_jit
 
 
 def is_pareto_efficient2(costs):
@@ -298,7 +298,7 @@ if __name__ == "__main__":
         plt.show()
 
     if False:
-        from skyline.algorithms_numpy import pareto_rank_naive
+        from paretoset.algorithms_numpy import pareto_rank_naive
 
         for algorithm in [pareto_rank_naive]:
 
@@ -341,7 +341,7 @@ if __name__ == "__main__":
     if False:
         costs = generate_problem_randn(10 ** 2, d=2)
 
-        from skyline.algorithms_numpy import pareto_rank_naive
+        from paretoset.algorithms_numpy import pareto_rank_naive
 
         ranks = pareto_rank_naive(costs)
         print(ranks)

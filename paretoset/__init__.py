@@ -9,7 +9,7 @@ Implementation of the Apriori algorithm.
 __version__ = "1.0.0"
 
 import sys
-from skyline.skyline import skyline
+from paretoset.paretoset import paretoset
 
 
 def run_tests():
@@ -24,5 +24,5 @@ def run_tests():
 
 
 if (sys.version_info[0] < 3) or (sys.version_info[1] < 6):
-    msg = "The `skyline` package only works for Python 3.6+."
+    msg = "The `paretoset` package only works for Python 3.6+."
     raise Exception(msg)

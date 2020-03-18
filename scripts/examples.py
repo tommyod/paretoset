@@ -2,11 +2,11 @@
 # =============================== EXAMPLE 1: HOTELS ========================================
 # ==========================================================================================
 
-from skyline import skyline
+from paretoset import paretoset
 import pandas as pd
 
 hotels = pd.DataFrame({"price": [50, 53, 62, 87, 83, 39, 60, 44], "distance_to_beach": [13, 21, 19, 13, 5, 22, 22, 25]})
-mask = skyline(hotels, sense=["min", "min"])
+mask = paretoset(hotels, sense=["min", "min"])
 skyline_hotels = hotels[mask]
 
 
@@ -39,7 +39,7 @@ plt.show()
 # =============================== EXAMPLE 2: SALESPEOPLE ===================================
 # ==========================================================================================
 
-from skyline import skyline
+from paretoset import paretoset
 import pandas as pd
 
 salespeople = pd.DataFrame(
@@ -49,7 +49,7 @@ salespeople = pd.DataFrame(
         "department": ["c", "c", "c", "b", "b", "a", "a", "c", "b", "a", "b", "a"],
     }
 )
-mask = skyline(salespeople, sense=["min", "max", "diff"])
+mask = paretoset(salespeople, sense=["min", "max", "diff"])
 top_performers = salespeople[mask]
 
 
@@ -95,7 +95,7 @@ plt.show()
 # =============================== EXAMPLE 2: SALESPEOPLE ===================================
 # ==========================================================================================
 
-from skyline import skyline
+from paretoset import paretoset
 import numpy as np
 from collections import namedtuple
 
@@ -107,7 +107,7 @@ solutions = [Solution(solution=object, objective_values=np.random.randn(2)) for 
 
 # Create an array of shape (solutions, objectives) and compute the non-dominated set
 objective_values_array = np.vstack([s.objective_values for s in solutions])
-mask = skyline(objective_values_array, sense=[min, min])
+mask = paretoset(objective_values_array, sense=[min, min])
 
 # Filter the list of solutions, keeping only the non-dominated solutions
 efficient_solutions = [solution for (solution, m) in zip(solutions, mask) if m]

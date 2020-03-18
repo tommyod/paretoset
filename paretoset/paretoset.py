@@ -1,6 +1,6 @@
 import numpy as np
 
-from skyline.algorithms_numpy import skyline_efficient
+from paretoset.algorithms_numpy import paretoset_efficient
 
 import collections.abc
 
@@ -19,7 +19,7 @@ except ImportError:
     USER_HAS_NUMBA = False
 
 
-def skyline(costs, sense=None):
+def paretoset(costs, sense=None):
 
     # The input is an np.ndarray
     if isinstance(costs, np.ndarray):
@@ -33,7 +33,7 @@ def skyline(costs, sense=None):
     # TODO: INF and NaN
 
     if sense is None:
-        return skyline_efficient(costs.copy())
+        return paretoset_efficient(costs.copy())
 
     n_costs, n_objectives = costs.shape
 
@@ -65,13 +65,13 @@ def skyline(costs, sense=None):
         costs[:, col] = -costs[:, col]
 
     if not diff_cols:
-        return skyline_efficient(costs)
+        return paretoset_efficient(costs)
 
     df = pd.DataFrame(costs)
     is_efficient = np.zeros(n_costs, dtype=np.bool_)
     for key, data in df.groupby(diff_cols):
         data = data[max_cols + min_cols].to_numpy()
-        mask = skyline_efficient(data.copy())
+        mask = paretoset_efficient(data.copy())
 
         if not isinstance(key, tuple):
             insert_mask = df[diff_cols] == key
