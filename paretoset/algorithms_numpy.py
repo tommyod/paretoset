@@ -172,3 +172,49 @@ def pareto_rank_NSGA2(costs):
         frontier = new_frontier
 
     return ranks
+
+
+def crowding_distance(costs):
+    """
+
+    Parameters
+    ----------
+    costs
+
+    Returns
+    -------
+
+    """
+    n_costs, n_objectives = costs.shape
+    distances = np.zeros_like(costs, dtype=np.float)  # Must use floats to allow np.inf
+
+    indices_reversed = np.zeros(n_costs, dtype=np.int)  # Used to inverse the sort
+
+    for j in range(n_objectives):
+
+        sorted_inds = np.argsort(costs[:, j])
+        sorted_column = costs[sorted_inds, j]
+
+        # Compute the diff of a_i as a_{i+1} - a_{i-1}
+        diffs = sorted_column[2:] - sorted_column[:-2]
+
+        # Add infinity to the bounary values
+        diffs = np.concatenate((np.array([np.inf]), diffs, np.array([np.inf])))
+
+        # Reverse the sort and add values to the indices
+        indices_reversed[sorted_inds] = np.arange(n_costs)
+        distances[:, j] = np.take_along_axis(diffs, indices_reversed, axis=0)
+
+    return distances
+
+
+if __name__ == "__main__":
+
+    costs = np.random.randn(1_000_000, 2)
+    import time as time
+
+    st = time.time()
+    crowding_distance(costs)
+    print(time.time() - st)
+
+    print(crowding_distance(costs)[0, 0])
