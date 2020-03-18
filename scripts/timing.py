@@ -65,7 +65,7 @@ plt.legend(loc="lower right").set_zorder(50)
 plt.xlabel("Number of observations (rows)")
 plt.ylabel("Time (seconds)")
 plt.grid(True, alpha=0.5, ls="--", zorder=0)
-#plt.yticks(times[:max_times])
+# plt.yticks(times[:max_times])
 plt.xticks(observations[:max_times], ["$10^{}$".format(i) for i in observations[:max_times]])
 
 
@@ -85,7 +85,7 @@ plt.semilogy(observations[: len(times)], times, "-o", ms=3, label="Uniform on si
 plt.legend(loc="lower right").set_zorder(50)
 plt.xlabel("Number of observations (rows)")
 plt.grid(True, alpha=0.5, ls="--", zorder=0)
-#plt.yticks(times[:max_times])
+# plt.yticks(times[:max_times])
 plt.xticks(observations[:max_times], ["$10^{}$".format(i) for i in observations[:max_times]])
 
 
