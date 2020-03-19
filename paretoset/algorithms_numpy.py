@@ -2,7 +2,7 @@ import numpy as np
 import collections
 
 
-def paretoset_naive(costs):
+def paretoset_naive(costs, distinct=True):
     """Naive implementation.
 
     Parameters
@@ -16,26 +16,30 @@ def paretoset_naive(costs):
     """
     n_costs, n_objectives = costs.shape
 
-    # Assume all points/costs are efficient
-    is_efficient = np.ones(n_costs, dtype=np.bool_)
+    # Assume all points/costs are inefficient
+    is_efficient = np.zeros(n_costs, dtype=np.bool_)
 
     for i in range(n_costs):
         this_cost = costs[i, :]
 
-        # Points that are incomparable to `this_cost`, or dominated by `this_cost`.
-        # In 2D, these points are above or to the right of `this_cost`.
-        incomparable_or_dominated_by = np.any(costs > this_cost, axis=1)
+        at_least_as_good = np.all(costs <= this_cost, axis=1)
+        any_better = np.any(costs < this_cost, axis=1)
 
-        # Any point is incomparable to itself
-        incomparable_or_dominated_by[i] = True
+        dominated_by = np.logical_and(at_least_as_good, any_better)
 
-        # By definition: `this_cost` is efficient if all other points are incomparable or dominated by `this_cost`,
-        # i.e., no other point dominates `this_cost`.
-        is_efficient[i] = np.all(incomparable_or_dominated_by)
+        # If we're looking for distinct points and it's already in the
+        # pareto set, disregard this value.
+        if distinct and np.any(is_efficient):
+            if np.any(np.all(costs[is_efficient] == this_cost, axis=1)):
+                continue
+
+        if not (np.any(dominated_by[:i]) or np.any(dominated_by[i + 1 :])):
+            is_efficient[i] = True
+
     return is_efficient
 
 
-def paretoset_efficient(costs):
+def paretoset_efficient(costs, distinct=True):
     """An efficient vectorized algorhtm.
 
     This algorithm was given by Peter in this answer on Stack Overflow:
@@ -55,6 +59,14 @@ def paretoset_efficient(costs):
         # Points that are incomparable to `this_cost`, or dominate `this_cost`.
         # In 2D, these points are below or to the left of `this_cost`.
         current_efficient_points = np.any(costs < this_cost, axis=1)
+
+        # If we're not looking for distinct, keep points equal to this cost
+        if not distinct:
+            no_smaller = np.logical_not(current_efficient_points)
+            equal_to_this_cost = np.all(costs[no_smaller] == this_cost, axis=1)
+            current_efficient_points[no_smaller] = np.logical_or(
+                current_efficient_points[no_smaller], equal_to_this_cost
+            )
 
         # Any point is incomparable to itself, so keep this point
         current_efficient_points[next_point_index] = True
@@ -209,8 +221,13 @@ def crowding_distance(costs):
 
 
 if __name__ == "__main__":
+    import pytest
 
-    costs = np.random.randn(1_000_000, 2)
+    pytest.main(args=[".", "--doctest-modules"])
+
+if __name__ == "__main__":
+
+    costs = np.random.randn(1_00, 2)
     import time as time
 
     st = time.time()
