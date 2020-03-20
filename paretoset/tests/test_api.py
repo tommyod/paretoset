@@ -84,6 +84,7 @@ class TestReadmeExamples:
 
     @pytest.mark.parametrize("operator, distinct", list(itertools.product(["min", "max"], bools)))
     def test_on_non_numeric_data(self, operator, distinct):
+        """Test that non-numeric data fails."""
 
         df = pd.DataFrame({"col1": [0, 1, 0, 1], "col2": ["A", "A", "B", "B"]})
 
@@ -94,6 +95,11 @@ class TestReadmeExamples:
         # Same as above
         with pytest.raises(TypeError):
             paretoset(df, sense=[operator, operator], distinct=distinct)
+            
+        # Fails on NumPy arrays too
+        with pytest.raises(TypeError):
+            data = np.array([[1, 1], [0, 1]], dtype=object)
+            paretoset(data, sense=[operator, operator], distinct=distinct)
 
         # This will work, because the operator works on numeric data
         mask = paretoset(df, sense=[operator, "diff"], distinct=distinct)

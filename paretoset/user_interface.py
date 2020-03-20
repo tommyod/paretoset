@@ -178,11 +178,7 @@ def paretorank(costs, sense=None, distinct=True, use_numba=True):
         paretorank_algorithm = pareto_rank_naive
 
     costs, sense = validate_inputs(costs=costs, sense=sense)
-
-    # TODO: INF and NaN
-
-    if sense is None:
-        return paretorank_algorithm(costs, distinct=distinct)
+    assert isinstance(sense, list)
 
     n_costs, n_objectives = costs.shape
 
@@ -190,19 +186,47 @@ def paretorank(costs, sense=None, distinct=True, use_numba=True):
     max_cols = [i for i in range(n_objectives) if sense[i] == "max"]
     min_cols = [i for i in range(n_objectives) if sense[i] == "min"]
 
-    if diff_cols and not user_has_package("pandas"):
-        raise ModuleNotFoundError("The `diff` sense requires pandas. See: https://pandas.pydata.org/")
+    # Check data types (MIN and MAX must be numerical)
+    message = "Data must be numerical. Please convert it. Data has type: {}"
 
-    for col in max_cols:
-        costs[:, col] = -costs[:, col]
+    if isinstance(costs, pd.DataFrame):
+        data_types = [costs.dtypes.values[i] for i in (max_cols + min_cols)]
+        if any(d == np.dtype("O") for d in data_types):
+            raise TypeError(message.format(data_types))
 
-    if not diff_cols:
+    else:
+        if costs.dtype == np.dtype("O"):
+            raise TypeError(message.format(costs.dtype))
+
+    # CASE 1: THE ONLY SENSE IS MINIMIZATION
+    # ---------------------------------------
+    if all(s == "min" for s in sense):
+        if isinstance(costs, pd.DataFrame):
+            costs = costs.to_numpy(copy=True)
         return paretorank_algorithm(costs, distinct=distinct)
 
-    df = pd.DataFrame(costs)
+    n_costs, n_objectives = costs.shape
+
+    if not diff_cols:
+        # Its an array
+        if not isinstance(costs, np.ndarray):
+            costs = costs.to_numpy(copy=True)
+        for col in max_cols:
+            costs[:, col] = -costs[:, col]
+
+        return paretorank_algorithm(costs, distinct=distinct)
+
+    if isinstance(costs, pd.DataFrame):
+        df = costs.copy()  # Copy to avoid mutating inputs
+        df.columns = np.arange(n_objectives)
+    else:
+        df = pd.DataFrame(costs)
+
+    assert isinstance(df, pd.DataFrame)
+    assert np.all(df.columns == np.arange(n_objectives))
 
     # If `object` columns are present and they can be converted, do it.
-    for col in df.columns:
+    for col in max_cols + min_cols:
         df[col] = pd.to_numeric(df[col], errors="coerce")
 
     all_ranks = np.zeros(n_costs, dtype=np.int_)
