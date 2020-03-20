@@ -39,7 +39,7 @@ def get_times(observations, cost_func, algorithm, num_runs):
             start_time = time.time()
             algorithm(costs)
             elapsed = time.time() - start_time
-            if elapsed > 1:
+            if elapsed > 5:
                 return
             runs.append(elapsed)
 

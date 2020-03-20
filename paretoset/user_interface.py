@@ -6,6 +6,9 @@ from paretoset.utils import user_has_package, validate_inputs
 if user_has_package("pandas"):
     import pandas as pd
 
+if user_has_package("numba"):
+    from paretoset.algorithms_numba import paretoset_jit
+
 
 def paretoset(costs, sense=None, distinct=True, use_numba=True):
     """Return mask indicating the Pareto set of a NumPy array or pandas DataFrame.
@@ -49,12 +52,17 @@ def paretoset(costs, sense=None, distinct=True, use_numba=True):
     array([ True,  True])
     """
 
+    if user_has_package("numba") and use_numba:
+        paretoset_algorithm = paretoset_jit
+    else:
+        paretoset_algorithm = paretoset_efficient
+
     costs, sense = validate_inputs(costs=costs, sense=sense)
 
     # TODO: INF and NaN
 
     if sense is None:
-        return paretoset_efficient(costs, distinct=distinct)
+        return paretoset_algorithm(costs, distinct=distinct)
 
     n_costs, n_objectives = costs.shape
 
@@ -72,6 +80,11 @@ def paretoset(costs, sense=None, distinct=True, use_numba=True):
         return paretoset_efficient(costs, distinct=distinct)
 
     df = pd.DataFrame(costs)
+
+    # If `object` columns are present and they can be converted, do it.
+    for col in df.columns:
+        df[col] = pd.to_numeric(df[col], errors="coerce")
+
     is_efficient = np.zeros(n_costs, dtype=np.bool_)
 
     # Create the groupby object
@@ -83,8 +96,8 @@ def paretoset(costs, sense=None, distinct=True, use_numba=True):
     for key, data in groupby:
 
         # Get the relevant data for the group and compute the efficient points
-        relevant_data = data[max_cols + min_cols].to_numpy()
-        efficient_mask = paretoset_efficient(relevant_data.copy(), distinct=distinct)
+        relevant_data = data[max_cols + min_cols].to_numpy(copy=True)
+        efficient_mask = paretoset_algorithm(relevant_data.copy(), distinct=distinct)
 
         # The `pd.DataFrame.groupby.indices` dict holds the row indices of the group
         data_mask = groupby.indices[key]
