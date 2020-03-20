@@ -1,26 +1,29 @@
-# paretoset [![Build Status](https://travis-ci.com/tommyod/paretoset.svg?branch=master)](https://travis-ci.com/tommyod/paretoset) [![PyPI version](https://badge.fury.io/py/paretoset.svg)](https://pypi.org/project/paretoset/)[![Downloads](https://pepy.tech/badge/paretoset)](https://pepy.tech/project/paretoset) [![Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
+# paretoset [![Build Status](https://travis-ci.com/tommyod/paretoset.svg?branch=master)](https://travis-ci.com/tommyod/paretoset) [![PyPI version](https://badge.fury.io/py/paretoset.svg)](https://pypi.org/project/paretoset/) [![Downloads](https://pepy.tech/badge/paretoset)](https://pepy.tech/project/paretoset) [![Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
 Compute the Pareto (non-dominated) set, i.e., skyline operator/query.
 
 There are two common ways to optimize a function of several variables: 
 
-- **Scalarization** combines the variables using a weighted sum: this gives a linear ordering and *single a minimum value*.
+- **Scalarization** combines objectives by a weighted sum: this gives a linear ordering and *single a minimum value*.
 - The **Pareto set** contains efficient (non-dominated) solutions: this gives a partial ordering and *a set of minimal values*.
 
 The disadvantage of scalarization is that objectives must be weighted a priori.
-The paretoset query returns every value that could be obtained by scalarization, but also values that could not have been found by scalarization.
+The Pareto set contains every value that could be obtained by scalarization, but also values possibly not found by scalarization.
 
-## Example - Skyline queries for data analysis and insight
+## Examples - Skyline queries for data analysis and insight
 
+### Hotels that are cheap and close to the beach
+
+In the database context, the Pareto set is called the *skyline* and computing the Pareto set is called a *skyline query*.
 The folllowing example is from the paper "*The Skyline Operator*" by Börzsönyi et al.
 
-Suppose you are going on holiday and you are looking for a hotel that is cheap and close to the beach. 
-These two goals are complementary as the hotels near the beach tend to be more expensive. 
+> Suppose you are going on holiday and you are looking for a hotel that is cheap and close to the beach. 
+  These two goals are complementary as the hotels near the beach tend to be more expensive. 
+  The database system is unable to decide which hotel is best for you, but it can at least present you all interesting hotels. 
+  Interesting are all hotels that are not worse than any other hotel in both dimensions. 
+  You can now make your final decision, weighing your personal preferences for price and distance to the beach.
 
-The database system at your travel agents' is unable to decide which hotel is best for you, but it can at least present you all interesting hotels. 
-Interesting are all hotels that are not worse than any other hotel in both dimensions. 
-We call this set of interesting hotels the *skyline*. 
-From the skyline, you can now your final decision, thereby weighing your personal preferences for price and distance to the beach.
+Here's an example showing hotels in the Pareto set.
 
 ```python
 from paretoset import paretoset
@@ -32,7 +35,9 @@ mask = paretoset(hotels, sense=["min", "min"])
 paretoset_hotels = hotels[mask]
 ```
 
-![](https://github.com/tommyod/paretoset/blob/initial/scripts/example_hotels.png)
+![](https://github.com/tommyod/paretoset/blob/master/scripts/example_hotels.png)
+
+### Top performing salespeople
 
 Suppose you wish to query a database for salespeople that might be eligible for a raise.
 To find top performers (low salary, but high sales) for every department:
@@ -52,7 +57,7 @@ mask = paretoset(salespeople, sense=["min", "max", "diff"])
 top_performers = salespeople[mask]
 ```
 
-![](https://github.com/tommyod/paretoset/blob/initial/scripts/example_salespeople.png)
+![](https://github.com/tommyod/paretoset/blob/master/scripts/example_salespeople.png)
 
 ## Example - Pareto efficient solutions in multiobjective optimization
 
@@ -64,21 +69,19 @@ from paretoset import paretoset
 import numpy as np
 from collections import namedtuple
 
-np.random.seed(42)
-
 # Create Solution objects holding the problem solution and objective values
 Solution = namedtuple("Solution", ["solution", "objective_values"])
 solutions = [Solution(solution=object, objective_values=np.random.randn(2)) for _ in range(999)]
 
 # Create an array of shape (solutions, objectives) and compute the non-dominated set
 objective_values_array = np.vstack([s.objective_values for s in solutions])
-mask = paretoset(objective_values_array, sense=[min, min])
+mask = paretoset(objective_values_array, sense=["min", "max"])
 
 # Filter the list of solutions, keeping only the non-dominated solutions
 efficient_solutions = [solution for (solution, m) in zip(solutions, mask) if m]
 ```
 
-![](https://github.com/tommyod/paretoset/blob/initial/scripts/example_optimization.png)
+![](https://github.com/tommyod/paretoset/blob/master/scripts/example_optimization.png)
 
 ## Installation
 
@@ -99,6 +102,11 @@ Your submitted code must be PEP8 compliant, and all tests must pass.
 The graph below shows how long it takes to compute the Pareto set.
 Gaussian data has only a few observations in the Pareto set, while uniformly distributed data on a simplex has every observations in the Pareto set.
 
-![](https://github.com/tommyod/paretoset/blob/initial/scripts/times_objectives.png)
+![](https://github.com/tommyod/paretoset/blob/master/scripts/times_pareto_set.png)
+
+
+## References
+
+- TODO
 
 

@@ -17,7 +17,23 @@ def any_jitted(costs, cost):
 
 
 @numba.jit(nopython=True)
-def paretoset_jit(costs):
+def all_jitted(costs, cost):
+
+    rows, cols = costs.shape
+    ans = np.zeros(shape=rows, dtype=np.bool_)
+
+    for i in range(rows):
+        equal = True
+        for j in range(cols):
+            if costs[i, j] != cost[j]:
+                equal = False
+
+        ans[i] = equal
+    return ans
+
+
+@numba.jit(nopython=True)
+def paretoset_jit(costs, distinct=True):
     """
     Find the pareto-efficient points
     :param costs: An (n_points, n_costs) array
@@ -33,17 +49,28 @@ def paretoset_jit(costs):
 
     next_point_index = 0  # Next index in the is_efficient array to search for
     while next_point_index < len(costs):
+
+        this_cost = costs[next_point_index]
+
         # Keep any point with a lower cost
-        nondominated_point_mask = any_jitted(costs, costs[next_point_index])
+        current_efficient_points = any_jitted(costs, this_cost)
         # np.any(costs < costs[next_point_index], axis=1)
-        nondominated_point_mask[next_point_index] = True  # And keep self
+        current_efficient_points[next_point_index] = True  # And keep self
+
+        # If we're not looking for distinct, keep points equal to this cost
+        if not distinct:
+            no_smaller = np.logical_not(current_efficient_points)
+            equal_to_this_cost = all_jitted(costs[no_smaller], this_cost)
+            current_efficient_points[no_smaller] = np.logical_or(
+                current_efficient_points[no_smaller], equal_to_this_cost
+            )
 
         # Remove dominated points
-        is_efficient = is_efficient[nondominated_point_mask]
-        costs = costs[nondominated_point_mask]
+        is_efficient = is_efficient[current_efficient_points]
+        costs = costs[current_efficient_points]
 
         # Re-adjust the index
-        next_point_index = np.sum(nondominated_point_mask[:next_point_index]) + 1
+        next_point_index = np.sum(current_efficient_points[:next_point_index]) + 1
 
     is_efficient_mask = np.zeros(shape=n_points, dtype=np.bool_)
     is_efficient_mask[is_efficient] = True

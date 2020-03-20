@@ -13,6 +13,7 @@ import itertools
 
 allowed_min_values = [min, "min", "MIN", "minimum", "Min"]
 allowed_max_values = [max, "max", "MAX", "maximum", "Max"]
+bools = [True, False]
 
 
 class TestReadmeExamples:
@@ -62,35 +63,54 @@ class TestReadmeExamples:
         efficient_solutions = [solution for (solution, m) in zip(solutions, mask) if m]
 
 
-class TestNumPyInputs:
-    def test_numpy_no_args(self):
-        costs = np.random.RandomState(123).randn(5, 2)
+class TestParetoSetAPI:
+    @pytest.mark.parametrize(
+        "dtype, distinct, use_numba", list(itertools.product([np.asarray, pd.DataFrame], bools, bools))
+    )
+    def test_at_least_one_chosen(self, dtype, distinct, use_numba):
+        """Test that the input is not mutated."""
+
+        # Generate random data
+        np.random.seed(42)
+        costs = np.random.randint(low=-2, high=2, size=(99, 3))
+
+        # Get the mask
+        mask = paretoset(dtype(costs), sense=[min, max, min], distinct=distinct, use_numba=use_numba)
+
+        # Verify that at least one element is chosen
+        assert np.any(mask)
+
+    @pytest.mark.parametrize(
+        "dtype, distinct, use_numba", list(itertools.product([np.asarray, pd.DataFrame], bools, bools))
+    )
+    def test_no_side_effects(self, dtype, distinct, use_numba):
+        """Test that the input is not mutated."""
+
+        # Generate random data
+        np.random.seed(42)
+        costs = np.random.randint(low=-2, high=2, size=(99, 3))
+        costs = dtype(costs)
+
+        # Copy the data before passing into function
         costs_before = costs.copy()
-        mask = paretoset(costs)
+        paretoset(costs, sense=[min, max, min], distinct=distinct, use_numba=use_numba)
 
-        assert isinstance(mask, np.ndarray)
-        assert mask.dtype == np.bool
-        assert np.allclose(costs_before, costs)
-
-    def test_numpy_with_args(self):
-        costs = np.random.RandomState(123).randn(5, 2)
-        costs_before = costs.copy()
-        mask = paretoset(costs, sense=["min", "max"])
-
-        assert isinstance(mask, np.ndarray)
-        assert mask.dtype == np.bool
-        assert np.allclose(costs_before, costs)
+        # The input argument is not changed/mutated in any way
+        assert costs_before.shape == costs.shape
+        assert np.all(costs_before == costs)
 
     @pytest.mark.parametrize("sense_min, sense_max", list(itertools.product(allowed_min_values, allowed_max_values)))
     def test_sense_argument(self, sense_min, sense_max):
+        """Test the synonyms for the `sense` argument."""
 
-        costs = np.random.RandomState(123).randn(10, 3)
-        costs_before = costs.copy()
+        np.random.seed(42)
+        costs = np.random.randint(low=-2, high=2, size=(99, 3))
 
         mask1 = paretoset(costs, sense=["min", "max", "diff"])
         mask2 = paretoset(costs, sense=[sense_min, sense_max, "diff"])
+
+        # Masks are equal
         assert np.all(mask1 == mask2)
-        assert np.allclose(costs, costs_before)
 
 
 class TestPandasInputs:
@@ -124,3 +144,7 @@ class TestPandasInputs:
         assert isinstance(mask, np.ndarray)
         assert mask.dtype == np.bool
         assert (df == df_before).all().all()
+
+
+if __name__ == "__main__":
+    pytest.main(args=[__file__, "--doctest-modules", "--maxfail=5", "-v", "--cache-clear", "--color", "yes", ""])

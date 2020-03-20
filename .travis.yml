@@ -17,10 +17,13 @@ before_script:
     - # mypy paretoset/*.py --ignore-missing-imports --show-error-context
 
 script:
-    - pytest --doctest-modules -v paretoset
-    - echo "$TRAVIS_TAG"
-    - if [ -n "$TRAVIS_TAG" ]; then
-      pip install twine;
-      python setup.py sdist bdist_wheel;
-      python -m twine upload dist/* -u tommyod -p $TWINE --skip-existing;
-      fi
+    - pip install -r requirements.txt
+    - python setup.py develop sdist
+    - pytest --doctest-modules paretoset
+      
+# -------------------- deploy: deploy to PyPI --------- 
+deploy:
+  provider: script
+  script: bash scripts/deploy.sh
+  on:
+    branch: master
