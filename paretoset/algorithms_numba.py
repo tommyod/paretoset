@@ -4,6 +4,7 @@ import numba
 
 @numba.jit(nopython=True)
 def any_jitted(costs, cost):
+    """Check if any are smaller over axis 1."""
 
     rows, cols = costs.shape
     ans = np.zeros(shape=rows, dtype=np.bool_)
@@ -12,23 +13,23 @@ def any_jitted(costs, cost):
         for j in range(cols):
             if costs[i, j] < cost[j]:
                 ans[i] = True
-                break
+                break  # Break out early here
     return ans
 
 
 @numba.jit(nopython=True)
 def all_jitted(costs, cost):
+    """Check if all are equal over axis 1."""
 
     rows, cols = costs.shape
-    ans = np.zeros(shape=rows, dtype=np.bool_)
+    ans = np.ones(shape=rows, dtype=np.bool_)
 
     for i in range(rows):
-        equal = True
         for j in range(cols):
             if costs[i, j] != cost[j]:
-                equal = False
+                ans[i] = False
+                break  # Break out early here
 
-        ans[i] = equal
     return ans
 
 
