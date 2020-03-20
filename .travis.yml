@@ -20,12 +20,10 @@ script:
     - pip install -r requirements.txt
     - python setup.py develop sdist
     - pytest --doctest-modules paretoset
-    - echo "$TRAVIS_TAG"
-    - echo "$TRAVIS_PULL_REQUEST"
-    - echo "TRAVIS_PULL_REQUEST_BRANCH"
-    - echo "TRAVIS_BRANCH"
-    - if [ -n "$TRAVIS_TAG" ]; then
-      pip install twine;
-      python setup.py sdist bdist_wheel;
-      python -m twine upload dist/* -u tommyod -p $TWINE --skip-existing;
-      fi
+      
+# -------------------- deploy: deploy to PyPI --------- 
+deploy:
+  provider: script
+  script: bash scripts/deploy.sh
+  on:
+    branch: master

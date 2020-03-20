@@ -10,7 +10,9 @@ There are two common ways to optimize a function of several variables:
 The disadvantage of scalarization is that objectives must be weighted a priori.
 The Pareto set contains every value that could be obtained by scalarization, but also values possibly not found by scalarization.
 
-## Example - Skyline queries for data analysis and insight
+## Examples - Skyline queries for data analysis and insight
+
+### Hotels that are cheap and close to the beach
 
 In the database context, the Pareto set is called the *skyline* and computing the Pareto set is called a *skyline query*.
 The folllowing example is from the paper "*The Skyline Operator*" by Börzsönyi et al.
@@ -19,7 +21,7 @@ The folllowing example is from the paper "*The Skyline Operator*" by Börzsönyi
   These two goals are complementary as the hotels near the beach tend to be more expensive. 
   The database system is unable to decide which hotel is best for you, but it can at least present you all interesting hotels. 
   Interesting are all hotels that are not worse than any other hotel in both dimensions. 
-  You can now your final decision, weighing your personal preferences for price and distance to the beach.
+  You can now make your final decision, weighing your personal preferences for price and distance to the beach.
 
 Here's an example showing hotels in the Pareto set.
 
@@ -34,6 +36,8 @@ paretoset_hotels = hotels[mask]
 ```
 
 ![](https://github.com/tommyod/paretoset/blob/master/scripts/example_hotels.png)
+
+### Top performing salespeople
 
 Suppose you wish to query a database for salespeople that might be eligible for a raise.
 To find top performers (low salary, but high sales) for every department:
@@ -100,7 +104,7 @@ Your submitted code must be PEP8 compliant, and all tests must pass.
 The graph below shows how long it takes to compute the Pareto set.
 Gaussian data has only a few observations in the Pareto set, while uniformly distributed data on a simplex has every observations in the Pareto set.
 
-![](https://github.com/tommyod/paretoset/blob/master/scripts/times_objectives.png)
+![](https://github.com/tommyod/paretoset/blob/master/scripts/times_pareto_set.png)
 
 
 ## References

@@ -47,12 +47,12 @@ def get_times(observations, cost_func, algorithm, num_runs):
 
 
 observations = list(range(1, 10))
-num_runs = 2
+num_runs = 5
 
 plt.figure(figsize=(9, 2.5))
 
 objectives = 3
-plt.subplot(1, 2, 1)
+ax1 = plt.subplot(121)
 max_times = 0
 plt.title("Pareto set with {} objectives".format(objectives, num_runs))
 times = list(get_times(observations, generate_problem_randn, paretoset, num_runs))
@@ -73,7 +73,7 @@ plt.xticks(observations[:max_times], ["$10^{}$".format(i) for i in observations[
 
 
 objectives = 9
-plt.subplot(1, 2, 2)
+ax2 = plt.subplot(122, sharey=ax1)
 max_times = 0
 plt.title("Pareto set with {} objectives".format(objectives, num_runs))
 times = list(get_times(observations, generate_problem_randn, paretoset, num_runs))
@@ -93,7 +93,7 @@ plt.xticks(observations[:max_times], ["$10^{}$".format(i) for i in observations[
 
 
 plt.tight_layout()
-plt.savefig("times_pareto_front.png".format(objectives), dpi=100)
+plt.savefig("times_pareto_set.png".format(objectives), dpi=100)
 plt.show()
 
 # =================================================================================
@@ -102,7 +102,7 @@ from paretoset.algorithms_numpy import pareto_rank_NSGA2, pareto_rank_naive
 plt.figure(figsize=(9, 2.5))
 
 objectives = 3
-plt.subplot(1, 2, 1)
+ax1 = plt.subplot(121)
 max_times = 0
 plt.title("pareto_rank_NSGA2 with {} objectives".format(objectives, num_runs))
 times = list(get_times(observations, generate_problem_randn, pareto_rank_NSGA2, num_runs))
@@ -123,7 +123,7 @@ plt.xticks(observations[:max_times], ["$10^{}$".format(i) for i in observations[
 
 
 objectives = 3
-plt.subplot(1, 2, 2)
+ax2 = plt.subplot(122, sharey=ax1)
 max_times = 0
 plt.title("pareto_rank_naive with {} objectives".format(objectives, num_runs))
 times = list(get_times(observations, generate_problem_randn, pareto_rank_naive, num_runs))
