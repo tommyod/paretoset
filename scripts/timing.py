@@ -29,7 +29,7 @@ def generate_problem_simplex(n, d):
 
 
 def get_times(observations, cost_func, algorithm, num_runs):
-    """Run a function and get the times."""
+    """Run a function and get execution times."""
 
     for num_obs in observations:
         num_obs = 10 ** num_obs
@@ -39,7 +39,7 @@ def get_times(observations, cost_func, algorithm, num_runs):
             start_time = time.time()
             algorithm(costs)
             elapsed = time.time() - start_time
-            if elapsed > 5:
+            if elapsed > 10:
                 return
             runs.append(elapsed)
 

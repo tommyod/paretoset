@@ -16,6 +16,7 @@ seeds = list(range(99))
 dtypes = [np.float, np.int]
 bools = [True, False]
 paretoset_algorithms = [paretoset_naive, paretoset_efficient, paretoset_jit, BNL]
+paretorank_algorithms = [pareto_rank_naive]
 
 
 class TestParetoSetImplementations:
@@ -165,18 +166,34 @@ class TestParetoSetImplementations:
 
 
 class TestParetoRankImplementations:
-    @pytest.mark.parametrize("seed", seeds)
-    def test_paretorank_on_random_instances(self, seed):
+    @pytest.mark.parametrize("algorithm, seed", itertools.product(paretorank_algorithms, seeds))
+    def test_paretorank_on_random_instances(self, algorithm, seed):
         """
         """
-        np.random.seed(seed)
-        n_costs, n_objectives = np.random.randint(2, 9, size=2)
-        costs = np.random.randn(n_costs, n_objectives)
+        # Generate random data
+        np.random.seed(42)
+        costs = np.random.randint(low=-2, high=2, size=(99, 3))
 
-        ranks_naive = pareto_rank_naive(costs)
-        ranks_efficient = pareto_rank_NSGA2(costs)
+        ranks = algorithm(costs)
 
-        assert np.all(ranks_naive == ranks_efficient)
+        # Minimum rank is 1, no rank greater than the number of rows
+        assert np.min(ranks) == 1
+        assert np.max(ranks) <= len(ranks)
+
+    @pytest.mark.parametrize("algorithm", paretorank_algorithms)
+    def test_paretorank_on_degenerate_case(self, algorithm):
+        """
+        """
+        # Generate random data
+        costs = np.ones((99, 1))
+
+        # Ranks are 1, 1, 1, 1, ...
+        ranks = algorithm(costs, distinct=False)
+        assert np.all(ranks == 1)
+
+        # Ranks are 1, 2, 3, 4, ...
+        ranks = algorithm(costs, distinct=True)
+        assert np.all(ranks == (np.arange(len(ranks)) + 1))
 
 
 if __name__ == "__main__":

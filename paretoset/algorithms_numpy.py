@@ -87,7 +87,7 @@ def paretoset_efficient(costs, distinct=True):
     return is_efficient_mask
 
 
-def pareto_rank_naive(costs):
+def pareto_rank_naive(costs, distinct=True):
     """Naive implementation of Pareto ranks."""
 
     n_costs, n_objectives = costs.shape
@@ -99,7 +99,7 @@ def pareto_rank_naive(costs):
     while np.sum(remaining) > 0:
 
         # Mark the costs that have rank `i`
-        frontier_mask = paretoset.user_interface.paretoset(costs[remaining])
+        frontier_mask = paretoset.user_interface.paretoset(costs[remaining], distinct=distinct)
 
         # Processed costs in this iteration (not processed already, and in the frontier)
         processed[np.logical_not(processed)] = frontier_mask
