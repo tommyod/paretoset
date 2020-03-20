@@ -38,12 +38,13 @@ def get_times(observations, cost_func, algorithm, num_runs):
         for run in range(num_runs):
             start_time = time.time()
             algorithm(costs)
-            runs.append(time.time() - start_time)
+            elapsed = time.time() - start_time
+            if elapsed > 1:
+                return
+            runs.append(elapsed)
 
         result = np.median(runs)
         yield result
-        if result > 1:  # If it takes too long, stop
-            return
 
 
 observations = list(range(1, 10))
@@ -68,7 +69,6 @@ plt.legend(loc="lower right").set_zorder(50)
 plt.xlabel("Number of observations (rows)")
 plt.ylabel("Time (seconds)")
 plt.grid(True, alpha=0.5, ls="--", zorder=0)
-# plt.yticks(times[:max_times])
 plt.xticks(observations[:max_times], ["$10^{}$".format(i) for i in observations[:max_times]])
 
 
@@ -88,7 +88,6 @@ plt.semilogy(observations[: len(times)], times, "-o", ms=3, label="Uniform on si
 plt.legend(loc="lower right").set_zorder(50)
 plt.xlabel("Number of observations (rows)")
 plt.grid(True, alpha=0.5, ls="--", zorder=0)
-# plt.yticks(times[:max_times])
 plt.xticks(observations[:max_times], ["$10^{}$".format(i) for i in observations[:max_times]])
 
 
@@ -96,6 +95,57 @@ plt.tight_layout()
 plt.savefig("times_pareto_set.png".format(objectives), dpi=100)
 plt.show()
 
+
+# =================================================================================
+from paretoset.algorithms_numpy import paretoset_efficient
+from paretoset.algorithms_numba import BNL, paretoset_jit
+
+plt.figure(figsize=(9, 2.5))
+
+algorithms = [paretoset_efficient, BNL, paretoset_jit]
+
+objectives = 3
+ax1 = plt.subplot(121)
+max_times = 0
+plt.title("Pareto set with {} objectives (Gaussian)".format(objectives, num_runs))
+
+for algorithm in algorithms:
+    times = list(get_times(observations, generate_problem_randn, algorithm, num_runs))
+    max_times = max(max_times, len(times))
+    plt.semilogy(observations[: len(times)], times, "-o", ms=3, label=algorithm.__name__)
+
+
+plt.legend(loc="lower right").set_zorder(50)
+plt.xlabel("Number of observations (rows)")
+plt.ylabel("Time (seconds)")
+plt.grid(True, alpha=0.5, ls="--", zorder=0)
+plt.xticks(observations[:max_times], ["$10^{}$".format(i) for i in observations[:max_times]])
+
+
+objectives = 3
+ax2 = plt.subplot(122, sharey=ax1)
+max_times = 0
+
+plt.title("Pareto set with {} objectives (Simplex)".format(objectives, num_runs))
+
+for algorithm in algorithms:
+    times = list(get_times(observations, generate_problem_simplex, algorithm, num_runs))
+    max_times = max(max_times, len(times))
+    plt.semilogy(observations[: len(times)], times, "-o", ms=3, label=algorithm.__name__)
+
+
+plt.legend(loc="lower right").set_zorder(50)
+plt.xlabel("Number of observations (rows)")
+plt.grid(True, alpha=0.5, ls="--", zorder=0)
+plt.xticks(observations[:max_times], ["$10^{}$".format(i) for i in observations[:max_times]])
+
+
+plt.tight_layout()
+plt.savefig("times_pareto_set_implementations.png".format(objectives), dpi=100)
+plt.show()
+
+
+1 / 0
 # =================================================================================
 from paretoset.algorithms_numpy import pareto_rank_NSGA2, pareto_rank_naive
 

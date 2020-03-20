@@ -4,8 +4,8 @@
 Tests for algorithms related to association rules.
 """
 
-from paretoset.algorithms_numpy import paretoset_naive, paretoset_efficient, pareto_rank_naive, pareto_rank_NSGA2
-from paretoset.algorithms_numba import paretoset_jit
+from paretoset.algorithms_numpy import paretoset_naive, paretoset_efficient, pareto_rank_naive
+from paretoset.algorithms_numba import paretoset_jit, pareto_rank_NSGA2, BNL
 
 import pytest
 import numpy as np
@@ -15,7 +15,7 @@ import itertools
 seeds = list(range(99))
 dtypes = [np.float, np.int]
 bools = [True, False]
-paretoset_algorithms = [paretoset_naive, paretoset_efficient, paretoset_jit]
+paretoset_algorithms = [paretoset_naive, paretoset_efficient, paretoset_jit, BNL]
 
 
 class TestParetoSetImplementations:
