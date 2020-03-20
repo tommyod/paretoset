@@ -38,20 +38,20 @@ def validate_inputs(costs, sense=None):
     elif user_has_package("pandas"):
         import pandas as pd
 
-        if isinstance(costs, pd.DataFrame):
-            return validate_inputs(costs.to_numpy(copy=True), sense=sense)
-        else:
+        if not isinstance(costs, pd.DataFrame):
             return validate_inputs(np.asarray(costs), sense=sense)
     else:
         return validate_inputs(np.asarray(costs), sense=sense)
 
-    if not (isinstance(costs, np.ndarray) and costs.ndim == 2):
-        raise TypeError("`costs` must be a NumPy array with 2 dimensions or pandas DataFrame.")
-
-    if sense is None:
-        return costs, sense
+    # if (not (isinstance(costs, np.ndarray) and costs.ndim == 2):
+    #    raise TypeError("`costs` must be a NumPy array with 2 dimensions or pandas DataFrame.")
 
     n_costs, n_objectives = costs.shape
+
+    if sense is None:
+        return costs, ["min"] * n_objectives
+    else:
+        sense = list(sense)
 
     if not isinstance(sense, collections.abc.Sequence):
         raise TypeError("`sense` parameter must be a sequence (e.g. list).")

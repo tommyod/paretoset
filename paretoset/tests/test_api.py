@@ -62,6 +62,36 @@ class TestReadmeExamples:
         # Filter the list of solutions, keeping only the non-dominated solutions
         efficient_solutions = [solution for (solution, m) in zip(solutions, mask) if m]
 
+    def test_example_several_different(self):
+        """A small example worked by hand."""
+
+        import pandas as pd
+
+        df = pd.DataFrame(
+            {
+                "col1": ["a", "a", "a", "a", "a", "b", "b", "b", "b"],
+                "col2": ["A", "A", "B", "B", "B", "A", "B", "B", "B"],
+                "col3": [-1, 0, 0, 1, 1, -2, 1, 2, 1],
+                "col4": [-1, 1, 1, 1, 0, -2, 0, 0, 0],
+            }
+        )
+        sense = ["diff", "diff", "min", "min"]
+        mask = paretoset(df, sense=sense, distinct=True)
+        expected = np.array([1, 0, 1, 0, 1, 1, 1, 0, 0], dtype=np.bool_)
+        assert np.all(mask == expected)
+
+        mask = paretoset(df, sense=sense, distinct=False)
+        expected = np.array([1, 0, 1, 0, 1, 1, 1, 0, 1], dtype=np.bool_)
+        assert np.all(mask == expected)
+
+    def test_min_on_non_numeric_data(self):
+
+        import pandas as pd
+
+        df = pd.DataFrame({"col1": [0, 1, 0, 1], "col2": ["A", "A", "B", "B"],})
+        with pytest.raises(TypeError):
+            mask = paretoset(df, sense=["diff", "min"], distinct=True)
+
 
 class TestParetoSetAPI:
     @pytest.mark.parametrize(
@@ -148,3 +178,17 @@ class TestPandasInputs:
 
 if __name__ == "__main__":
     pytest.main(args=[__file__, "--doctest-modules", "--maxfail=5", "-v", "--cache-clear", "--color", "yes", ""])
+
+    import pandas as pd
+
+    df = pd.DataFrame(
+        {
+            "col1": ["a", "a", "a", "a", "a", "b", "b", "b", "b"],
+            "col2": ["A", "A", "B", "B", "B", "A", "B", "B", "B"],
+            "col3": [-1, 0, 0, 1, 1, -2, 1, 2, 1],
+            "col4": [-1, 1, 1, 1, 0, -2, 0, 0, 0],
+        }
+    )
+    mask = paretoset(df, sense=["diff", "diff", "min", "min"], distinct=True)
+    print(mask)
+    expected = np.array([1, 0, 1, 0, 1, 1, 1, 0, 0], dtype=np.bool_)

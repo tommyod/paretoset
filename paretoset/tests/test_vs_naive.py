@@ -4,8 +4,8 @@
 Tests for algorithms related to association rules.
 """
 
-from paretoset.algorithms_numpy import paretoset_naive, paretoset_efficient, pareto_rank_naive, pareto_rank_NSGA2
-from paretoset.algorithms_numba import paretoset_jit
+from paretoset.algorithms_numpy import paretoset_naive, paretoset_efficient, pareto_rank_naive
+from paretoset.algorithms_numba import paretoset_jit, pareto_rank_NSGA2, BNL
 
 import pytest
 import numpy as np
@@ -15,7 +15,18 @@ import itertools
 seeds = list(range(99))
 dtypes = [np.float, np.int]
 bools = [True, False]
-paretoset_algorithms = [paretoset_naive, paretoset_efficient, paretoset_jit]
+paretoset_algorithms = [paretoset_naive, paretoset_efficient, paretoset_jit, BNL]
+paretorank_algorithms = [pareto_rank_naive]
+
+
+def generate_problem_simplex(n, d):
+    """Generate D dimensional data on the D-1 dimensional simplex."""
+    # https://cs.stackexchange.com/questions/3227/uniform-sampling-from-a-simplex
+    data = np.random.randn(n, d - 1)
+    data = np.hstack((np.zeros(n).reshape(-1, 1), data, np.ones(n).reshape(-1, 1)))
+    diffs = data[:, 1:] - data[:, :-1]
+    assert diffs.shape == (n, d)
+    return diffs
 
 
 class TestParetoSetImplementations:
@@ -92,9 +103,9 @@ class TestParetoSetImplementations:
 
         # Create some random data
         np.random.seed(seed)
-        n_costs = np.random.randint(1, 99)
+        n_costs = np.random.randint(1, 9)
         n_objectives = np.random.randint(1, 4)
-        costs = np.random.randint(low=-2, high=2, size=(n_costs, n_objectives))
+        costs = np.random.randint(low=-1, high=1, size=(n_costs, n_objectives))
 
         # Get masks
         mask_distinct = algorithm(costs, distinct=True)
@@ -165,22 +176,83 @@ class TestParetoSetImplementations:
 
 
 class TestParetoRankImplementations:
-    @pytest.mark.parametrize("seed", seeds)
-    def test_paretorank_on_random_instances(self, seed):
+    @pytest.mark.parametrize("algorithm, seed", itertools.product(paretorank_algorithms, seeds))
+    def test_paretorank_on_random_instances(self, algorithm, seed):
         """
         """
+        # Generate random data
+        np.random.seed(42)
+        costs = np.random.randint(low=-2, high=2, size=(99, 3))
+
+        ranks = algorithm(costs)
+
+        # Minimum rank is 1, no rank greater than the number of rows
+        assert np.min(ranks) == 1
+        assert np.max(ranks) <= len(ranks)
+
+    @pytest.mark.parametrize("algorithm", paretorank_algorithms)
+    def test_paretorank_on_degenerate_case(self, algorithm):
+        """
+        """
+        # Generate random data
+        costs = np.ones((9, 1))
+
+        # Ranks are 1, 1, 1, 1, ...
+        ranks = algorithm(costs, distinct=False)
+        assert np.all(ranks == 1)
+
+        # Ranks are 1, 2, 3, 4, ...
+        ranks = algorithm(costs, distinct=True)
+        assert np.all(ranks == (np.arange(len(ranks)) + 1))
+
+    @pytest.mark.parametrize("seed, algorithm", itertools.product(seeds, paretorank_algorithms))
+    def test_invariance_under_permutations(self, seed, algorithm):
+        """Test that the algorithm in invariant under random permutations of data."""
+
+        # Create some random data
         np.random.seed(seed)
-        n_costs, n_objectives = np.random.randint(2, 9, size=2)
-        costs = np.random.randn(n_costs, n_objectives)
+        n_costs = np.random.randint(1, 9)
+        n_objectives = np.random.randint(1, 4)
+        costs = np.random.randint(low=-1, high=1, size=(n_costs, n_objectives))
 
-        ranks_naive = pareto_rank_naive(costs)
-        ranks_efficient = pareto_rank_NSGA2(costs)
+        # Get masks
+        mask_distinct = algorithm(costs, distinct=True)
+        ranks_non_distinct = algorithm(costs, distinct=False)
 
-        assert np.all(ranks_naive == ranks_efficient)
+        # Permute the data
+        permutation = np.random.permutation(np.arange(n_costs))
+        assert np.min(mask_distinct) > 0
+        assert np.min(ranks_non_distinct) > 0
+
+        # When `distinct` is set to `False`, permutation invariance should hold
+        assert np.all(ranks_non_distinct[permutation] == algorithm(costs[permutation], distinct=False))
+
+        # Equally many should me marked in the mask, regardless of `distinct` or not
+        assert np.sum(mask_distinct[permutation]) == np.sum(algorithm(costs[permutation], distinct=True))
+        assert np.sum(ranks_non_distinct[permutation]) == np.sum(algorithm(costs[permutation], distinct=False))
+
+    @pytest.mark.parametrize("seed, algorithm", itertools.product(seeds, paretorank_algorithms))
+    def test_paretorank_on_simplex(self, seed, algorithm):
+        """On a simplex every value has rank 1."""
+        # Generate random data on a D-1 dimensional simplex
+        np.random.seed(seed)
+        n_costs = 99
+        n_objectives = np.random.randint(2, 10)
+        costs = generate_problem_simplex(n_costs, n_objectives)
+
+        # Ranks are 1, 1, 1, 1, ...
+        ranks = algorithm(costs, distinct=False)
+        assert np.all(ranks == 1)
+
+        # Ranks are 1, 1, 1, 1, ...
+        ranks = algorithm(costs, distinct=True)
+        assert np.all(ranks == 1)
 
 
 if __name__ == "__main__":
-    pytest.main(args=[".", "--doctest-modules", "--maxfail=5", "--cache-clear", "--color", "yes", ""])
+    pytest.main(
+        args=[".", "--doctest-modules", "--maxfail=5", "--cache-clear", "--color", "yes", "--durations", str(10)]
+    )
 
     costs = np.array([[1, 1], [0, 1], [0, 1]])
 

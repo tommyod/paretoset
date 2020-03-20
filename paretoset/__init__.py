@@ -9,7 +9,7 @@ Compute the Pareto (non-dominated) set, i.e., skyline operator/query.
 __version__ = "1.0.0"
 
 import sys
-from paretoset.user_interface import paretoset
+from paretoset.user_interface import paretoset, paretorank
 
 
 def run_tests():

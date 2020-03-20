@@ -2,6 +2,9 @@ import numpy as np
 import collections
 
 
+import paretoset.user_interface  # Import like this to avoid circular import issues
+
+
 def paretoset_naive(costs, distinct=True):
     """Naive implementation.
 
@@ -84,7 +87,7 @@ def paretoset_efficient(costs, distinct=True):
     return is_efficient_mask
 
 
-def pareto_rank_naive(costs):
+def pareto_rank_naive(costs, distinct=True):
     """Naive implementation of Pareto ranks."""
 
     n_costs, n_objectives = costs.shape
@@ -96,7 +99,7 @@ def pareto_rank_naive(costs):
     while np.sum(remaining) > 0:
 
         # Mark the costs that have rank `i`
-        frontier_mask = paretoset_efficient(costs[remaining])
+        frontier_mask = paretoset.user_interface.paretoset(costs[remaining], distinct=distinct)
 
         # Processed costs in this iteration (not processed already, and in the frontier)
         processed[np.logical_not(processed)] = frontier_mask
@@ -107,81 +110,6 @@ def pareto_rank_naive(costs):
         # Update the remaining values
         remaining[remaining] = np.logical_not(frontier_mask)
         current_rank += 1
-
-    return ranks
-
-
-import numba
-
-
-@numba.jit(nopython=True, fastmath=True)
-def dominates(a, b):
-    """Does a dominate b?"""
-    better = False
-    for a_i, b_i in zip(a, b):
-
-        # Worse in one dimension -> does not domiate
-        if a_i > b_i:
-            return False
-
-        # Better in at least one dimension
-        if a_i < b_i:
-            better = True
-    return better
-
-
-# @numba.jit(nopython=True)
-def pareto_rank_NSGA2(costs):
-    """Algorithm from the NSGA-II paper."""
-    n_costs, n_objectives = costs.shape
-
-    dominated_by = [set() for i in range(n_costs)]
-
-    domination_counter = np.zeros(n_costs, dtype=np.int_)
-    ranks = np.zeros(n_costs, dtype=np.int_)
-
-    domination_counter2 = np.zeros(n_costs, dtype=np.int_)
-    dominated_by2 = [set() for i in range(n_costs)]
-
-    frontier = set()
-    for i in range(n_costs):
-        this_cost = costs[i, :]
-
-        dominated_by_i = np.all(this_cost >= costs, axis=1) & np.any(this_cost > costs, axis=1)
-        dominated_by2[i].update(set([i for i in range(n_costs) if dominated_by_i[i]]))
-
-        dominates_i = np.all(costs <= this_cost, axis=1) & np.any(costs < this_cost, axis=1)
-        domination_counter2[i] += np.sum(dominates_i)
-
-        for j in range(n_costs):
-            other_cost = costs[j, :]
-
-            if dominates(this_cost, other_cost):
-                # Add `other_cost` to the set of solutions dominated by `this_cost`
-                dominated_set = dominated_by[i]
-                dominated_set.add(j)
-            elif dominates(other_cost, this_cost):
-                # Increment domination counter of `this_cost`
-                domination_counter[i] += 1
-
-        assert (domination_counter == domination_counter2).all()
-        assert [i == j for i, j in zip(dominated_by, dominated_by2)]
-        if domination_counter[i] == 0:
-            ranks[i] = 1
-            frontier.add(i)
-
-    rank = 2
-    while frontier:
-        new_frontier = set()
-        # Get all points
-        for frontier_i in frontier:
-            for dominated_j in dominated_by[frontier_i]:
-                domination_counter[dominated_j] -= 1
-                if domination_counter[dominated_j] == 0:
-                    ranks[dominated_j] = rank
-                    new_frontier.add(dominated_j)
-        rank += 1
-        frontier = new_frontier
 
     return ranks
 
@@ -223,7 +151,7 @@ def crowding_distance(costs):
 if __name__ == "__main__":
     import pytest
 
-    pytest.main(args=[".", "--doctest-modules"])
+    pytest.main(args=[".", "--doctest-modules", "--color", "yes"])
 
 if __name__ == "__main__":
 
