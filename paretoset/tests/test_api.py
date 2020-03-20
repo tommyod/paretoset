@@ -95,7 +95,7 @@ class TestReadmeExamples:
         # Same as above
         with pytest.raises(TypeError):
             paretoset(df, sense=[operator, operator], distinct=distinct)
-            
+
         # Fails on NumPy arrays too
         with pytest.raises(TypeError):
             data = np.array([[1, 1], [0, 1]], dtype=object)
