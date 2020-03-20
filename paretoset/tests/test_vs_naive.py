@@ -231,20 +231,20 @@ class TestParetoRankImplementations:
         assert np.sum(mask_distinct[permutation]) == np.sum(algorithm(costs[permutation], distinct=True))
         assert np.sum(ranks_non_distinct[permutation]) == np.sum(algorithm(costs[permutation], distinct=False))
 
-    @pytest.mark.parametrize("algorithm", paretorank_algorithms)
-    def test_paretorank_on_simplex(self, algorithm):
+    @pytest.mark.parametrize("seed, algorithm", itertools.product(seeds, paretorank_algorithms))
+    def test_paretorank_on_simplex(self, seed, algorithm):
         """On a simplex every value has rank 1."""
         # Generate random data on a D-1 dimensional simplex
-        np.random.seed(42)
-        n_costs = np.random.randint(1, 9)
-        n_objectives = np.random.randint(2, 4)
+        np.random.seed(seed)
+        n_costs = 99
+        n_objectives = np.random.randint(2, 10)
         costs = generate_problem_simplex(n_costs, n_objectives)
 
-        # Ranks are 1, 2, 3, 4, ...
+        # Ranks are 1, 1, 1, 1, ...
         ranks = algorithm(costs, distinct=False)
         assert np.all(ranks == 1)
 
-        # Ranks are 1, 2, 3, 4, ...
+        # Ranks are 1, 1, 1, 1, ...
         ranks = algorithm(costs, distinct=True)
         assert np.all(ranks == 1)
 

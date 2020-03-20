@@ -47,8 +47,8 @@ def get_times(observations, cost_func, algorithm, num_runs):
         yield result
 
 
-observations = list(range(1, 10))
-num_runs = 5
+observations = list(range(1, 8))
+num_runs = 3
 
 plt.figure(figsize=(9, 2.5))
 
