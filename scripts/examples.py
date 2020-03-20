@@ -108,7 +108,7 @@ if __name__ == "__main__":
 
     # Create an array of shape (solutions, objectives) and compute the non-dominated set
     objective_values_array = np.vstack([s.objective_values for s in solutions])
-    mask = paretoset(objective_values_array, sense=[min, max])
+    mask = paretoset(objective_values_array, sense=["min", "max"])
 
     # Filter the list of solutions, keeping only the non-dominated solutions
     efficient_solutions = [solution for (solution, m) in zip(solutions, mask) if m]

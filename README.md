@@ -69,15 +69,13 @@ from paretoset import paretoset
 import numpy as np
 from collections import namedtuple
 
-np.random.seed(42)
-
 # Create Solution objects holding the problem solution and objective values
 Solution = namedtuple("Solution", ["solution", "objective_values"])
 solutions = [Solution(solution=object, objective_values=np.random.randn(2)) for _ in range(999)]
 
 # Create an array of shape (solutions, objectives) and compute the non-dominated set
 objective_values_array = np.vstack([s.objective_values for s in solutions])
-mask = paretoset(objective_values_array, sense=[min, min])
+mask = paretoset(objective_values_array, sense=["min", "max"])
 
 # Filter the list of solutions, keeping only the non-dominated solutions
 efficient_solutions = [solution for (solution, m) in zip(solutions, mask) if m]
