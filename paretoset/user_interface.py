@@ -23,7 +23,7 @@ def paretoset(costs, sense=None, distinct=True, use_numba=True):
         How to treat duplicates. If True, only the first one is returned.
         If False, every identical observation is returned.
     use_numba : bool
-        If True, numba will be used if it`s installed.
+        If True, numba will be used if it is installed.
 
     Returns
     -------
@@ -58,9 +58,9 @@ def paretoset(costs, sense=None, distinct=True, use_numba=True):
 
     n_costs, n_objectives = costs.shape
 
-    diff_cols = [i for i in range(n_objectives) if sense[i] in ("diff", "difference")]
-    max_cols = [i for i in range(n_objectives) if sense[i] in ("max", "maximum")]
-    min_cols = [i for i in range(n_objectives) if sense[i] in ("min", "minimum")]
+    diff_cols = [i for i in range(n_objectives) if sense[i] == "diff"]
+    max_cols = [i for i in range(n_objectives) if sense[i] == "max"]
+    min_cols = [i for i in range(n_objectives) if sense[i] == "min"]
 
     if diff_cols and not user_has_package("pandas"):
         raise ModuleNotFoundError("The `diff` sense requires pandas. See: https://pandas.pydata.org/")

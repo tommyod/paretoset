@@ -65,8 +65,12 @@ def validate_inputs(costs, sense=None):
         raise TypeError("`sense` parameter must be a sequence of strings.")
     sense = [s.lower() for s in sense]
 
+    sense_map = {"min": "min", "minimum": "min", "max": "max", "maximum": "max", "diff": "diff", "difference": "diff"}
+
+    sense = [sense_map.get(s) for s in sense]
+
     # Verify that the strings are of correct format
-    valid = ["min", "minimum", "max", "maximum", "diff", "difference"]
+    valid = ["min", "max", "diff"]
     if not all(s in valid for s in sense):
         raise TypeError("`sense` must be one of: {}".format(valid))
 
