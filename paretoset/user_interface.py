@@ -3,8 +3,8 @@ import numpy as np
 from paretoset.algorithms_numpy import paretoset_efficient
 from paretoset.utils import user_has_package, validate_inputs
 
-if user_has_package("pandas"):
-    import pandas as pd
+
+import pandas as pd
 
 if user_has_package("numba"):
     from paretoset.algorithms_numba import paretoset_jit
@@ -68,28 +68,21 @@ def paretoset(costs, sense=None, distinct=True, use_numba=True):
 
     # Check data types (MIN and MAX must be numerical)
     message = "Data must be numerical. Please convert it. Data has type: {}"
-    if user_has_package("pandas"):
-        import pandas as pd
 
-        if isinstance(costs, pd.DataFrame):
-            data_types = [costs.dtypes.values[i] for i in (max_cols + min_cols)]
-            if any(d == np.dtype("O") for d in data_types):
-                raise TypeError(message.format(data_types))
+    if isinstance(costs, pd.DataFrame):
+        data_types = [costs.dtypes.values[i] for i in (max_cols + min_cols)]
+        if any(d == np.dtype("O") for d in data_types):
+            raise TypeError(message.format(data_types))
 
-        else:
-            if costs.dtype == np.dtype("O"):
-                raise TypeError(message.format(costs.dtype))
+    else:
+        if costs.dtype == np.dtype("O"):
+            raise TypeError(message.format(costs.dtype))
 
     # CASE 1: THE ONLY SENSE IS MINIMIZATION
     # ---------------------------------------
     if all(s == "min" for s in sense):
-        if user_has_package("pandas"):
-            import pandas as pd
-
-            if isinstance(costs, pd.DataFrame):
-                costs = costs.to_numpy(copy=True)
-
-        assert isinstance(costs, np.ndarray)
+        if isinstance(costs, pd.DataFrame):
+            costs = costs.to_numpy(copy=True)
         return paretoset_algorithm(costs, distinct=distinct)
 
     n_costs, n_objectives = costs.shape
@@ -103,17 +96,11 @@ def paretoset(costs, sense=None, distinct=True, use_numba=True):
 
         return paretoset_algorithm(costs, distinct=distinct)
 
-    if diff_cols and not user_has_package("pandas"):
-        raise ModuleNotFoundError("The `diff` sense requires pandas. See: https://pandas.pydata.org/")
-
-    if user_has_package("pandas"):
-        import pandas as pd
-
-        if isinstance(costs, pd.DataFrame):
-            df = costs.copy()  # Copy to avoid mutating inputs
-            df.columns = np.arange(n_objectives)
-        else:
-            df = pd.DataFrame(costs)
+    if isinstance(costs, pd.DataFrame):
+        df = costs.copy()  # Copy to avoid mutating inputs
+        df.columns = np.arange(n_objectives)
+    else:
+        df = pd.DataFrame(costs)
 
     assert isinstance(df, pd.DataFrame)
     assert np.all(df.columns == np.arange(n_objectives))

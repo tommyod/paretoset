@@ -1,5 +1,7 @@
 if __name__ == "__main__":
 
+    PLOT = False
+
     # ==========================================================================================
     # =============================== EXAMPLE 1: HOTELS ========================================
     # ==========================================================================================
@@ -14,27 +16,33 @@ if __name__ == "__main__":
     skyline_hotels = hotels[mask]
 
     # ==================================================
-    import matplotlib.pyplot as plt
+    if PLOT:
+        import matplotlib.pyplot as plt
 
-    plt.figure(figsize=(6, 2.5))
+        plt.figure(figsize=(6, 2.5))
 
-    plt.title("Hotels in the Pareto set")
+        plt.title("Hotels in the Pareto set")
 
-    plt.scatter(hotels["price"], hotels["distance_to_beach"], zorder=10, label="All hotels", s=50, alpha=0.8)
+        plt.scatter(hotels["price"], hotels["distance_to_beach"], zorder=10, label="All hotels", s=50, alpha=0.8)
 
-    plt.scatter(
-        skyline_hotels["price"], skyline_hotels["distance_to_beach"], zorder=5, label="Skyline hotels", s=150, alpha=1
-    )
+        plt.scatter(
+            skyline_hotels["price"],
+            skyline_hotels["distance_to_beach"],
+            zorder=5,
+            label="Skyline hotels",
+            s=150,
+            alpha=1,
+        )
 
-    plt.legend()
-    plt.xlim([0, 100])
-    plt.ylim([0, 30])
-    plt.xlabel("Price")
-    plt.ylabel("Distance to beach")
-    plt.grid(True, alpha=0.5, ls="--", zorder=0)
-    plt.tight_layout()
-    plt.savefig("example_hotels.png", dpi=100)
-    plt.show()
+        plt.legend()
+        plt.xlim([0, 100])
+        plt.ylim([0, 30])
+        plt.xlabel("Price")
+        plt.ylabel("Distance to beach")
+        plt.grid(True, alpha=0.5, ls="--", zorder=0)
+        plt.tight_layout()
+        plt.savefig("example_hotels.png", dpi=100)
+        plt.show()
 
     # ==========================================================================================
     # =============================== EXAMPLE 2: SALESPEOPLE ===================================
@@ -54,43 +62,44 @@ if __name__ == "__main__":
     top_performers = salespeople[mask]
 
     # ==================================================
-    import matplotlib.pyplot as plt
+    if PLOT:
+        import matplotlib.pyplot as plt
 
-    plt.figure(figsize=(7, 2.5))
-    # plt.suptitle("Salespeople eligible for a raise (high sales, low salary)", y=1.00)
+        plt.figure(figsize=(7, 2.5))
+        # plt.suptitle("Salespeople eligible for a raise (high sales, low salary)", y=1.00)
 
-    salespeople_by_dept = salespeople.groupby("department")
-    performers_by_dept = top_performers.groupby("department")
+        salespeople_by_dept = salespeople.groupby("department")
+        performers_by_dept = top_performers.groupby("department")
 
-    subplot = 1
-    for (group_salespeople, group_performers) in zip(salespeople_by_dept, performers_by_dept):
-        plt.subplot(1, 3, subplot)
+        subplot = 1
+        for (group_salespeople, group_performers) in zip(salespeople_by_dept, performers_by_dept):
+            plt.subplot(1, 3, subplot)
 
-        department, group_salespeople = group_salespeople
-        _, group_performers = group_performers
+            department, group_salespeople = group_salespeople
+            _, group_performers = group_performers
 
-        plt.title(f"Department '{department}'")
-        plt.scatter(
-            group_salespeople["salary"], group_salespeople["sales"], zorder=10, label="Salespeople", s=50, alpha=0.8
-        )
+            plt.title(f"Department '{department}'")
+            plt.scatter(
+                group_salespeople["salary"], group_salespeople["sales"], zorder=10, label="Salespeople", s=50, alpha=0.8
+            )
 
-        plt.scatter(
-            group_performers["salary"], group_performers["sales"], zorder=4, label="Top performers", s=150, alpha=1
-        )
+            plt.scatter(
+                group_performers["salary"], group_performers["sales"], zorder=4, label="Top performers", s=150, alpha=1
+            )
 
-        plt.xlabel("Salary")
-        if subplot == 1:
-            plt.ylabel("Sales")
-            plt.legend()
-        plt.grid(True, alpha=0.5, ls="--", zorder=0)
-        plt.xlim([0, 200])
-        plt.ylim([0, 200])
-        plt.subplots_adjust(top=0.5)
-        subplot += 1
+            plt.xlabel("Salary")
+            if subplot == 1:
+                plt.ylabel("Sales")
+                plt.legend()
+            plt.grid(True, alpha=0.5, ls="--", zorder=0)
+            plt.xlim([0, 200])
+            plt.ylim([0, 200])
+            plt.subplots_adjust(top=0.5)
+            subplot += 1
 
-    plt.tight_layout()
-    plt.savefig("example_salespeople.png", dpi=100)
-    plt.show()
+        plt.tight_layout()
+        plt.savefig("example_salespeople.png", dpi=100)
+        plt.show()
 
     # ==========================================================================================
     # =============================== EXAMPLE 3: OPTIMIZATION ==================================
@@ -114,31 +123,32 @@ if __name__ == "__main__":
     efficient_solutions = [solution for (solution, m) in zip(solutions, mask) if m]
 
     # ==================================================
-    import matplotlib.pyplot as plt
+    if PLOT:
+        import matplotlib.pyplot as plt
 
-    plt.figure(figsize=(6, 2.5))
+        plt.figure(figsize=(6, 2.5))
 
-    plt.title("Objective value space and the Pareto set (efficient solutions)")
+        plt.title("Objective value space and the Pareto set (efficient solutions)")
 
-    plt.scatter(
-        objective_values_array[:, 0], objective_values_array[:, 1], zorder=10, label="Solutions", s=10, alpha=0.8
-    )
+        plt.scatter(
+            objective_values_array[:, 0], objective_values_array[:, 1], zorder=10, label="Solutions", s=10, alpha=0.8
+        )
 
-    plt.scatter(
-        objective_values_array[mask, 0],
-        objective_values_array[mask, 1],
-        zorder=5,
-        label="Efficient solutions",
-        s=50,
-        alpha=1,
-    )
+        plt.scatter(
+            objective_values_array[mask, 0],
+            objective_values_array[mask, 1],
+            zorder=5,
+            label="Efficient solutions",
+            s=50,
+            alpha=1,
+        )
 
-    plt.legend(loc="upper right").set_zorder(50)
-    plt.xlabel("Objective 1 (min.)")
-    plt.ylabel("Objective 2 (max.)")
-    plt.xticks(fontsize=0)
-    plt.yticks(fontsize=0)
-    plt.grid(True, alpha=0.5, ls="--", zorder=0)
-    plt.tight_layout()
-    plt.savefig("example_optimization.png", dpi=100)
-    plt.show()
+        plt.legend(loc="upper right").set_zorder(50)
+        plt.xlabel("Objective 1 (min.)")
+        plt.ylabel("Objective 2 (max.)")
+        plt.xticks(fontsize=0)
+        plt.yticks(fontsize=0)
+        plt.grid(True, alpha=0.5, ls="--", zorder=0)
+        plt.tight_layout()
+        plt.savefig("example_optimization.png", dpi=100)
+        plt.show()
