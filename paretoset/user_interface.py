@@ -73,18 +73,22 @@ def paretoset(costs, sense=None, distinct=True, use_numba=True):
 
     df = pd.DataFrame(costs)
     is_efficient = np.zeros(n_costs, dtype=np.bool_)
-    for key, data in df.groupby(diff_cols):
-        data = data[max_cols + min_cols].to_numpy()
-        mask = paretoset_efficient(data.copy(), distinct=distinct)
 
-        if not isinstance(key, tuple):
-            insert_mask = df[diff_cols] == key
-        else:
-            insert_mask = (df[diff_cols] == key).all(axis=1)
+    # Create the groupby object
+    # We could've implemented our own groupby, but choose to use pandas since
+    # it's likely better than what we can come up with on our own.
+    groupby = df.groupby(diff_cols)
 
-        insert_mask = insert_mask.to_numpy().ravel()
+    # Iteration through the groups
+    for key, data in groupby:
 
-        is_efficient[insert_mask] = mask
+        # Get the relevant data for the group and compute the efficient points
+        relevant_data = data[max_cols + min_cols].to_numpy()
+        efficient_mask = paretoset_efficient(relevant_data.copy(), distinct=distinct)
+
+        # The `pd.DataFrame.groupby.indices` dict holds the row indices of the group
+        data_mask = groupby.indices[key]
+        is_efficient[data_mask] = efficient_mask
 
     return is_efficient
 
