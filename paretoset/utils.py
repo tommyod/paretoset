@@ -13,23 +13,40 @@ def user_has_package(package_name):
 
 
 def validate_inputs(costs, sense=None):
-    """Sanitize user inputs for the `paretoset` function."""
+    """Sanitize user inputs for the `paretoset` function.
+    
+    Examples
+    --------
+    >>> costs, sense = validate_inputs([1, 2, 3])
+    >>> costs
+    array([[1],
+           [2],
+           [3]])
+    
+    """
 
     # The input is an np.ndarray
     if isinstance(costs, np.ndarray):
+        if costs.ndim == 1:
+            return validate_inputs(costs.copy().reshape(-1, 1), sense=sense)
         if costs.ndim != 2:
             raise ValueError("`costs` must have shape (observations, objectives).")
+
+        # It's a 2D ndarray -> copy it
+        costs = costs.copy()
+
     elif user_has_package("pandas"):
         import pandas as pd
 
         if isinstance(costs, pd.DataFrame):
-            costs = costs.to_numpy()
+            return validate_inputs(costs.to_numpy(copy=True), sense=sense)
         else:
-            raise TypeError("`costs` must be a NumPy array with 2 dimensions or pandas DataFrame.")
+            return validate_inputs(np.asarray(costs), sense=sense)
     else:
-        raise TypeError("`costs` must be a NumPy array with 2 dimensions or pandas DataFrame.")
+        return validate_inputs(np.asarray(costs), sense=sense)
 
-    assert isinstance(costs, np.ndarray)
+    if not (isinstance(costs, np.ndarray) and costs.ndim == 2):
+        raise TypeError("`costs` must be a NumPy array with 2 dimensions or pandas DataFrame.")
 
     if sense is None:
         return costs, sense
@@ -54,3 +71,9 @@ def validate_inputs(costs, sense=None):
         raise TypeError("`sense` must be one of: {}".format(valid))
 
     return costs, sense
+
+
+if __name__ == "__main__":
+    import pytest
+
+    pytest.main(args=[".", "--doctest-modules", "--maxfail=5", "--cache-clear", "--color", "yes", ""])

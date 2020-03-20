@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Implementation of the Apriori algorithm.
+Compute the Pareto (non-dominated) set, i.e., skyline operator/query. 
 """
 
 # We use semantic versioning
@@ -9,7 +9,7 @@ Implementation of the Apriori algorithm.
 __version__ = "1.0.0"
 
 import sys
-from paretoset.paretoset import paretoset
+from paretoset.user_interface import paretoset
 
 
 def run_tests():

@@ -14,10 +14,12 @@ from paretoset import paretoset
 
 
 def generate_problem_randn(n, d):
+    """Generate Gaussian data."""
     return np.random.randn(n, d)
 
 
 def generate_problem_simplex(n, d):
+    """Generate D dimensional data on the D-1 dimensional simplex."""
     # https://cs.stackexchange.com/questions/3227/uniform-sampling-from-a-simplex
     data = np.random.randn(n, d - 1)
     data = np.hstack((np.zeros(n).reshape(-1, 1), data, np.ones(n).reshape(-1, 1)))
@@ -27,6 +29,7 @@ def generate_problem_simplex(n, d):
 
 
 def get_times(observations, cost_func, algorithm, num_runs):
+    """Run a function and get the times."""
 
     for num_obs in observations:
         num_obs = 10 ** num_obs

@@ -47,33 +47,44 @@ class TestParetoSetImplementations:
         """Test the `distinct` parameter on a simple example"""
         costs = np.array([[1, 1], [0, 1], [0, 1]])
 
-        ranks_naive = algorithm(costs, distinct=True)
-        assert np.all(ranks_naive == np.array([False, True, False]))
+        ranks_distinct = algorithm(costs, distinct=True)
+        assert np.all(ranks_distinct == np.array([False, True, False]))
 
-        ranks_naive = algorithm(costs, distinct=False)
-        assert np.all(ranks_naive == np.array([False, True, True]))
+        ranks_non_distinct = algorithm(costs, distinct=False)
+        assert np.all(ranks_non_distinct == np.array([False, True, True]))
 
     @pytest.mark.parametrize("algorithm", paretoset_algorithms)
     def test_case_distinct_2(self, algorithm):
         """Test the `distinct` parameter on a simple example"""
         costs = np.array([[1, 0], [1, 0], [0, 1], [0, 1]])
 
-        ranks_naive = algorithm(costs, distinct=True)
-        assert np.all(ranks_naive == np.array([True, False, True, False]))
+        ranks_distinct = algorithm(costs, distinct=True)
+        assert np.all(ranks_distinct == np.array([True, False, True, False]))
 
-        ranks_naive = algorithm(costs, distinct=False)
-        assert np.all(ranks_naive == True)
+        ranks_non_distinct = algorithm(costs, distinct=False)
+        assert np.all(ranks_non_distinct == True)
 
     @pytest.mark.parametrize("algorithm", paretoset_algorithms)
     def test_case_distinct_3(self, algorithm):
         """Test the `distinct` parameter on a simple example"""
         costs = np.array([[1, 0], [1, 0], [0, 1], [0, 1], [0.5, 0.5], [0.5, 0.5]])
 
-        ranks_naive = algorithm(costs, distinct=True)
-        assert np.all(ranks_naive == np.array([True, False, True, False, True, False]))
+        ranks_distinct = algorithm(costs, distinct=True)
+        assert np.all(ranks_distinct == np.array([True, False, True, False, True, False]))
 
-        ranks_naive = algorithm(costs, distinct=False)
-        assert np.all(ranks_naive == True)
+        ranks_non_distinct = algorithm(costs, distinct=False)
+        assert np.all(ranks_non_distinct == True)
+
+    @pytest.mark.parametrize("algorithm", paretoset_algorithms)
+    def test_case_distinct_4(self, algorithm):
+        """Test the `distinct` parameter on a simple example"""
+        costs = np.array([[0], [0]])
+
+        ranks_distinct = algorithm(costs, distinct=True)
+        assert np.all(ranks_distinct == np.array([True, False]))
+
+        ranks_non_distinct = algorithm(costs, distinct=False)
+        assert np.all(ranks_non_distinct == True)
 
     @pytest.mark.parametrize("seed, algorithm", itertools.product(seeds, paretoset_algorithms))
     def test_invariance_under_permutations(self, seed, algorithm):
@@ -87,19 +98,19 @@ class TestParetoSetImplementations:
 
         # Get masks
         mask_distinct = algorithm(costs, distinct=True)
-        mask_unique = algorithm(costs, distinct=False)
+        ranks_non_distinct = algorithm(costs, distinct=False)
 
         # Permute the data
         permutation = np.random.permutation(np.arange(n_costs))
         assert np.sum(mask_distinct) > 0
-        assert np.sum(mask_unique) > 0
+        assert np.sum(ranks_non_distinct) > 0
 
         # When `distinct` is set to `False`, permutation invariance should hold
-        assert np.all(mask_unique[permutation] == algorithm(costs[permutation], distinct=False))
+        assert np.all(ranks_non_distinct[permutation] == algorithm(costs[permutation], distinct=False))
 
         # Equally many should me marked in the mask, regardless of `distinct` or not
         assert np.sum(mask_distinct[permutation]) == np.sum(algorithm(costs[permutation], distinct=True))
-        assert np.sum(mask_unique[permutation]) == np.sum(algorithm(costs[permutation], distinct=False))
+        assert np.sum(ranks_non_distinct[permutation]) == np.sum(algorithm(costs[permutation], distinct=False))
 
     @pytest.mark.parametrize("seed, algorithm", itertools.product(seeds, paretoset_algorithms))
     def test_equal_values(self, seed, algorithm):
