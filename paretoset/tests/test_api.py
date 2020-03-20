@@ -65,8 +65,6 @@ class TestReadmeExamples:
     def test_example_several_different(self):
         """A small example worked by hand."""
 
-        import pandas as pd
-
         df = pd.DataFrame(
             {
                 "col1": ["a", "a", "a", "a", "a", "b", "b", "b", "b"],
@@ -84,13 +82,32 @@ class TestReadmeExamples:
         expected = np.array([1, 0, 1, 0, 1, 1, 1, 0, 1], dtype=np.bool_)
         assert np.all(mask == expected)
 
-    def test_min_on_non_numeric_data(self):
+    @pytest.mark.parametrize("operator, distinct", list(itertools.product(["min", "max"], bools)))
+    def test_on_non_numeric_data(self, operator, distinct):
 
-        import pandas as pd
+        df = pd.DataFrame({"col1": [0, 1, 0, 1], "col2": ["A", "A", "B", "B"]})
 
-        df = pd.DataFrame({"col1": [0, 1, 0, 1], "col2": ["A", "A", "B", "B"],})
+        # This will not work because 'operator' is applied over non-numeric data
         with pytest.raises(TypeError):
-            mask = paretoset(df, sense=["diff", "min"], distinct=True)
+            paretoset(df, sense=["diff", operator], distinct=distinct)
+
+        # Same as above
+        with pytest.raises(TypeError):
+            paretoset(df, sense=[operator, operator], distinct=distinct)
+
+        # This will work, because the operator works on numeric data
+        mask = paretoset(df, sense=[operator, "diff"], distinct=distinct)
+        assert np.any(mask)
+
+    @pytest.mark.parametrize("dtype", [np.int_, np.float_])
+    def test_diff_on_numeric_data(self, dtype):
+        """Test that 'diff' works on numeric data."""
+        # Generate random data
+        np.random.seed(42)
+        costs = np.random.randint(low=-2, high=2, size=(99, 2))
+        costs = np.asarray(costs, dtype=dtype)
+
+        assert np.any(paretoset(costs, sense=["diff", "min"]))
 
 
 class TestParetoSetAPI:
