@@ -7,20 +7,20 @@ python:
     - 3.6
     - 3.7
     - 3.8
-  
-before_install:
-    - pip install pep8 flake8 black mypy
+    
+install:
+    - python setup.py develop sdist # Install the package (minimal requirements)
   
 before_script:
+    - python setup.py develop sdist # Install the package (minimal requirements)
+    - python ./scripts/examples.py # Verify that examples run
+    - pip install --requirement requirements.txt # Install development requirements
+
+script:
     - # flake8 --show-source --ignore=F811,W293,W391,W292,W291,E252,W503,E203 --max-line-length=120 --exclude='conf.py,__init__.py'
     - black . --check -l 120
     - # mypy paretoset/*.py --ignore-missing-imports --show-error-context
-
-script:
-    - python setup.py develop sdist # Install the package (minimal requirements)
-    - python ./scripts/examples.py # Verify that examples run
-    - pip install -r requirements.txt # Install development requirements
-    - pytest --doctest-modules paretoset # Run the tests
+    - pytest paretoset --doctest-modules --color=yes # Run the tests
       
 # -------------------- deploy: deploy to PyPI --------- 
 deploy:

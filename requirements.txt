@@ -3,3 +3,7 @@ matplotlib
 numpy
 numba
 pandas
+pep8 
+flake8 
+black 
+mypy
