@@ -102,10 +102,10 @@ def dominates(a, b, length):
     """Does a dominate b?"""
     better = False
     for i in range(length):
-        a_i = a[i]
-        b_i = b[i]
+        a_i, b_i = a[i], b[i]
 
         # Worse in one dimension -> does not domiate
+        # This is faster than computing `at least as good` in every dimension
         if a_i > b_i:
             return False
 

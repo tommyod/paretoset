@@ -4,7 +4,7 @@
 Tests for algorithms related to association rules.
 """
 
-from paretoset.algorithms_numpy import paretoset_naive, paretoset_efficient, pareto_rank_naive
+from paretoset.algorithms_numpy import paretoset_naive, paretoset_efficient, pareto_rank_naive, crowding_distance
 from paretoset.algorithms_numba import paretoset_jit, pareto_rank_NSGA2, BNL
 
 import pytest
@@ -249,14 +249,55 @@ class TestParetoRankImplementations:
         assert np.all(ranks == 1)
 
 
+class TestCrowdingDistance:
+    def test_on_known_instance(self):
+        """Test on a small instance computed by hand."""
+        costs = np.array([[1, 2], [3, 9], [5, 3], [9, 1]], dtype=np.float)
+        dist = crowding_distance(costs)
+        assert np.all(dist == np.array([np.inf, np.inf, 0.8125, np.inf]))
+
+    @pytest.mark.parametrize("seed", seeds)
+    def test_invariance_under_permutations(self, seed):
+        """Test that the algorithm in invariant under random permutations of data."""
+
+        # Create some random data
+        np.random.seed(seed)
+        n_costs = np.random.randint(1, 9)
+        n_objectives = np.random.randint(1, 4)
+
+        # Permutation invariance does not hold if rows are duplicated
+        # Therefore we use floats here
+        costs = np.random.randn(n_costs, n_objectives)
+
+        # Get masks
+        distances = crowding_distance(costs)
+
+        # Verify that one distance is returned for each row
+        assert len(distances) == n_costs
+
+        # Permute the data
+        permutation = np.random.permutation(np.arange(n_costs))
+
+        # Permutation invariance should hold
+        assert np.all(distances[permutation] == crowding_distance(costs[permutation]))
+
+    def test_no_side_effects(self):
+        """Test that the input is not mutated."""
+
+        # Generate random data
+        np.random.seed(42)
+        costs = np.random.randn(10, 3)
+
+        # Copy the data before passing into function
+        costs_before = costs.copy()
+        crowding_distance(costs)
+
+        # The input argument is not changed/mutated in any way
+        assert costs_before.shape == costs.shape
+        assert np.all(costs_before == costs)
+
+
 if __name__ == "__main__":
     pytest.main(
         args=[".", "--doctest-modules", "--maxfail=5", "--cache-clear", "--color", "yes", "--durations", str(10)]
     )
-
-    costs = np.array([[1, 1], [0, 1], [0, 1]])
-
-    print(costs)
-    print(repr(paretoset_naive(costs, distinct=True)))
-
-    print(repr(paretoset_naive(costs, distinct=False)))
