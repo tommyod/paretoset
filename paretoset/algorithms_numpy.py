@@ -1,7 +1,4 @@
 import numpy as np
-import collections
-
-
 import paretoset.user_interface  # Import like this to avoid circular import issues
 
 
@@ -117,10 +114,10 @@ def pareto_rank_naive(costs, distinct=True, use_numba=True):
 
 def crowding_distance(costs):
     """Compute the crowding distance of (non-NaN) numerical data.
-    
-    The input data in `costs` must be a NumPy ndarray of shape 
-    (observations, objectives). The user is responsible for dealing with NaN 
-    values, duplicate rows and constant columns *before* calling this function. 
+
+    The input data in `costs` must be a NumPy ndarray of shape
+    (observations, objectives). The user is responsible for dealing with NaN
+    values, duplicate rows and constant columns *before* calling this function.
 
     Parameters
     ----------
@@ -131,7 +128,7 @@ def crowding_distance(costs):
     -------
     distances : np.ndarray
         The crowding distance of each observation (row).
-        
+
     Examples
     --------
     >>> import numpy as np

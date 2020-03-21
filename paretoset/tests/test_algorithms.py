@@ -5,7 +5,7 @@ Tests for algorithms related to association rules.
 """
 
 from paretoset.algorithms_numpy import paretoset_naive, paretoset_efficient, pareto_rank_naive, crowding_distance
-from paretoset.algorithms_numba import paretoset_jit, pareto_rank_NSGA2, BNL
+from paretoset.algorithms_numba import paretoset_jit, BNL
 
 import pytest
 import numpy as np
@@ -73,7 +73,7 @@ class TestParetoSetImplementations:
         assert np.all(ranks_distinct == np.array([True, False, True, False]))
 
         ranks_non_distinct = algorithm(costs, distinct=False)
-        assert np.all(ranks_non_distinct == True)
+        assert np.all(ranks_non_distinct)
 
     @pytest.mark.parametrize("algorithm", paretoset_algorithms)
     def test_case_distinct_3(self, algorithm):
@@ -84,7 +84,7 @@ class TestParetoSetImplementations:
         assert np.all(ranks_distinct == np.array([True, False, True, False, True, False]))
 
         ranks_non_distinct = algorithm(costs, distinct=False)
-        assert np.all(ranks_non_distinct == True)
+        assert np.all(ranks_non_distinct)
 
     @pytest.mark.parametrize("algorithm", paretoset_algorithms)
     def test_case_distinct_4(self, algorithm):
@@ -95,7 +95,7 @@ class TestParetoSetImplementations:
         assert np.all(ranks_distinct == np.array([True, False]))
 
         ranks_non_distinct = algorithm(costs, distinct=False)
-        assert np.all(ranks_non_distinct == True)
+        assert np.all(ranks_non_distinct)
 
     @pytest.mark.parametrize("seed, algorithm", itertools.product(seeds, paretoset_algorithms))
     def test_invariance_under_permutations(self, seed, algorithm):
@@ -125,8 +125,8 @@ class TestParetoSetImplementations:
 
     @pytest.mark.parametrize("seed, algorithm", itertools.product(seeds, paretoset_algorithms))
     def test_equal_values(self, seed, algorithm):
-        """For each group of identical data in the Pareto set: if `distinct`, 
-        the first index should be True and everything else False. 
+        """For each group of identical data in the Pareto set: if `distinct`,
+        the first index should be True and everything else False.
         If not `distinct`, the group should all be True.
 
         """

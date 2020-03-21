@@ -262,22 +262,4 @@ def pareto_rank_NSGA2(costs):
 if __name__ == "__main__":
     import pytest
 
-    # pytest.main(args=[__file__, "--doctest-modules", "--maxfail=5", "-v", "--cache-clear", "--color", "yes", ""])
-
-    np.random.seed(1)
-    n_costs = 12
-    n_objectives = 2
-    costs = np.random.randn(n_costs, n_objectives).round(0)
-
-    ans = BNL(costs, distinct=True)
-
-    from paretoset.algorithms_numpy import paretoset_efficient
-
-    ans2 = paretoset_efficient(costs, distinct=True)
-    assert np.all(ans == ans2)
-
-    ans = BNL(costs, distinct=False)
-    ans2 = paretoset_efficient(costs, distinct=False)
-    assert np.all(ans == ans2)
-
-    print(ans)
+    pytest.main(args=[__file__, "--doctest-modules", "--maxfail=5", "--color", "yes"])

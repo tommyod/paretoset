@@ -14,7 +14,7 @@ def user_has_package(package_name):
 
 def validate_inputs(costs, sense=None):
     """Sanitize user inputs for the `paretoset` function.
-    
+
     Examples
     --------
     >>> costs, sense = validate_inputs([1, 2, 3])
@@ -22,7 +22,7 @@ def validate_inputs(costs, sense=None):
     array([[1],
            [2],
            [3]])
-    
+
     """
 
     # The input is an np.ndarray

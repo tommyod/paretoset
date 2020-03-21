@@ -27,6 +27,7 @@ class TestReadmeExamples:
         )
         mask = paretoset(hotels, sense=["min", "min"])
         effi_hotels = hotels[mask]
+        effi_hotels = effi_hotels
 
     def test_example_salespeople(self):
         """Example in the readme."""
@@ -42,6 +43,7 @@ class TestReadmeExamples:
         )
         mask = paretoset(salespeople, sense=["min", "max", "diff"])
         top_performers = salespeople[mask]
+        top_performers = top_performers
 
     def test_example_optimization(self):
         """Example in the readme."""
@@ -61,6 +63,7 @@ class TestReadmeExamples:
 
         # Filter the list of solutions, keeping only the non-dominated solutions
         efficient_solutions = [solution for (solution, m) in zip(solutions, mask) if m]
+        efficient_solutions = efficient_solutions
 
     def test_example_several_different(self):
         """A small example worked by hand."""

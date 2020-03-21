@@ -12,7 +12,7 @@ if user_has_package("numba"):
 
 def paretoset(costs, sense=None, distinct=True, use_numba=True):
     """Return boolean mask indicating the Pareto set of (non-NaN) numerical data.
-    
+
     The input data in `costs` can be either a pandas DataFrame or a NumPy ndarray
     of shape (observations, objectives). The user is responsible for dealing with
     NaN values *before* sending data to this function. Only numerical data is
@@ -47,9 +47,9 @@ def paretoset(costs, sense=None, distinct=True, use_numba=True):
     array([ True,  True,  True, False])
     >>> paretoset(costs, sense=["min", "max"])
     array([False, False,  True,  True])
-    
+
     The `distinct` parameter:
-    
+
     >>> paretoset([0, 0], distinct=True)
     array([ True, False])
     >>> paretoset([0, 0], distinct=False)
@@ -136,10 +136,10 @@ def paretoset(costs, sense=None, distinct=True, use_numba=True):
 
 def paretorank(costs, sense=None, distinct=True, use_numba=True):
     """Return integer array with Pareto ranks of (non-NaN) numerical data.
-    
+
     Observations in the Pareto set are assigned rank 1. After removing the Pareto
     set, the Pareto set of the remaining data is assigned rank 2, and so forth.
-    
+
     The input data in `costs` can be either a pandas DataFrame or a NumPy ndarray
     of shape (observations, objectives). The user is responsible for dealing with
     NaN values *before* sending data to this function. Only numerical data is
@@ -174,9 +174,9 @@ def paretorank(costs, sense=None, distinct=True, use_numba=True):
     array([1, 1, 1, 2])
     >>> paretorank(costs, sense=["min", "max"])
     array([3, 2, 1, 1])
-    
+
     The `distinct` parameter:
-    
+
     >>> paretorank([0, 0], distinct=True)
     array([1, 2])
     >>> paretorank([0, 0], distinct=False)
