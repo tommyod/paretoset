@@ -65,7 +65,7 @@ def validate_inputs(costs, sense=None):
         raise TypeError("`sense` parameter must be a sequence of strings.")
     sense = [s.lower() for s in sense]
 
-    sense_map = {"min": "min", "minimum": "min", "max": "max", "maximum": "max", "diff": "diff", "difference": "diff"}
+    sense_map = {"min": "min", "minimum": "min", "max": "max", "maximum": "max", "diff": "diff", "different": "diff"}
 
     sense = [sense_map.get(s) for s in sense]
 

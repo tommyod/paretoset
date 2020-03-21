@@ -1,38 +1,42 @@
 import numpy as np
 
-from paretoset.algorithms_numpy import paretoset_efficient
+from paretoset.algorithms_numpy import paretoset_efficient, pareto_rank_naive
 from paretoset.utils import user_has_package, validate_inputs
 
 
 import pandas as pd
 
 if user_has_package("numba"):
-    from paretoset.algorithms_numba import paretoset_jit
+    from paretoset.algorithms_numba import BNL
 
 
 def paretoset(costs, sense=None, distinct=True, use_numba=True):
-    """Return mask indicating the Pareto set of a NumPy array or pandas DataFrame.
-
+    """Return boolean mask indicating the Pareto set of (non-NaN) numerical data.
+    
+    The input data in `costs` can be either a pandas DataFrame or a NumPy ndarray
+    of shape (observations, objectives). The user is responsible for dealing with
+    NaN values *before* sending data to this function. Only numerical data is
+    allowed, with the exception of `diff` (different) columns.
 
     Parameters
     ----------
     costs : np.ndarray or pd.DataFrame
         Array or DataFrame of shape (observations, objectives).
-    sense : collection
-        List or tuple with `min` (default), `max` or `diff`. If None, minimization is assumed
-        for every objective (column). The parameter `diff` indicates that each observation must
-        be different for that objective.
+    sense : list
+        List with strings for each column (objective). The value `min` (default)
+        indicates minimization, `max` indicates maximization and `diff` indicates
+        different values. Using `diff` is equivalent to a group-by operation
+        over the columns marked with `diff`. If None, minimization is assumed.
     distinct : bool
-        How to treat duplicates. If True, only the first one is returned.
-        If False, every identical observation is returned.
+        How to treat duplicate rows. If `True`, only the first duplicate is returned.
+        If `False`, every identical observation is returned instead.
     use_numba : bool
-        If True, numba will be used if it is installed.
+        If True, numba will be used if it is installed by the user.
 
     Returns
     -------
     mask : np.ndarray
         Boolean mask with `True` for observations in the Pareto set.
-
 
     Examples
     --------
@@ -53,7 +57,7 @@ def paretoset(costs, sense=None, distinct=True, use_numba=True):
     """
 
     if user_has_package("numba") and use_numba:
-        paretoset_algorithm = paretoset_jit
+        paretoset_algorithm = BNL
     else:
         paretoset_algorithm = paretoset_efficient
 
@@ -131,45 +135,52 @@ def paretoset(costs, sense=None, distinct=True, use_numba=True):
 
 
 def paretorank(costs, sense=None, distinct=True, use_numba=True):
-    """Return mask indicating the Pareto set of a NumPy array or pandas DataFrame.
-
+    """Return integer array with Pareto ranks of (non-NaN) numerical data.
+    
+    Observations in the Pareto set are assigned rank 1. After removing the Pareto
+    set, the Pareto set of the remaining data is assigned rank 2, and so forth.
+    
+    The input data in `costs` can be either a pandas DataFrame or a NumPy ndarray
+    of shape (observations, objectives). The user is responsible for dealing with
+    NaN values *before* sending data to this function. Only numerical data is
+    allowed, with the exception of `diff` (different) columns.
 
     Parameters
     ----------
     costs : np.ndarray or pd.DataFrame
         Array or DataFrame of shape (observations, objectives).
-    sense : collection
-        List or tuple with `min` (default), `max` or `diff`. If None, minimization is assumed
-        for every objective (column). The parameter `diff` indicates that each observation must
-        be different for that objective.
+    sense : list
+        List with strings for each column (objective). The value `min` (default)
+        indicates minimization, `max` indicates maximization and `diff` indicates
+        different values. Using `diff` is equivalent to a group-by operation
+        over the columns marked with `diff`. If None, minimization is assumed.
     distinct : bool
-        How to treat duplicates. If True, only the first one is returned.
-        If False, every identical observation is returned.
+        How to treat duplicate rows. If `True`, only the first duplicate is returned.
+        If `False`, every identical observation is returned instead.
     use_numba : bool
-        If True, numba will be used if it is installed.
+        If True, numba will be used if it is installed by the user.
 
     Returns
     -------
-    mask : np.ndarray
-        Boolean mask with `True` for observations in the Pareto set.
-
+    ranks : np.ndarray
+        Integer array with Pareto ranks of the observations.
 
     Examples
     --------
     >>> from paretoset import paretoset
     >>> import numpy as np
     >>> costs = np.array([[2, 0], [1, 1], [0, 2], [3, 3]])
-    >>> paretoset(costs)
-    array([ True,  True,  True, False])
-    >>> paretoset(costs, sense=["min", "max"])
-    array([False, False,  True,  True])
+    >>> paretorank(costs)
+    array([1, 1, 1, 2])
+    >>> paretorank(costs, sense=["min", "max"])
+    array([3, 2, 1, 1])
     
     The `distinct` parameter:
     
-    >>> paretoset([0, 0], distinct=True)
-    array([ True, False])
-    >>> paretoset([0, 0], distinct=False)
-    array([ True,  True])
+    >>> paretorank([0, 0], distinct=True)
+    array([1, 2])
+    >>> paretorank([0, 0], distinct=False)
+    array([1, 1])
     """
 
     if user_has_package("numba") and use_numba:
@@ -203,7 +214,7 @@ def paretorank(costs, sense=None, distinct=True, use_numba=True):
     if all(s == "min" for s in sense):
         if isinstance(costs, pd.DataFrame):
             costs = costs.to_numpy(copy=True)
-        return paretorank_algorithm(costs, distinct=distinct)
+        return paretorank_algorithm(costs, distinct=distinct, use_numba=use_numba)
 
     n_costs, n_objectives = costs.shape
 
@@ -214,7 +225,7 @@ def paretorank(costs, sense=None, distinct=True, use_numba=True):
         for col in max_cols:
             costs[:, col] = -costs[:, col]
 
-        return paretorank_algorithm(costs, distinct=distinct)
+        return paretorank_algorithm(costs, distinct=distinct, use_numba=use_numba)
 
     if isinstance(costs, pd.DataFrame):
         df = costs.copy()  # Copy to avoid mutating inputs
@@ -241,7 +252,7 @@ def paretorank(costs, sense=None, distinct=True, use_numba=True):
 
         # Get the relevant data for the group and compute the efficient points
         relevant_data = data[max_cols + min_cols].to_numpy(copy=True)
-        ranks = paretorank_algorithm(relevant_data.copy(), distinct=distinct)
+        ranks = paretorank_algorithm(relevant_data.copy(), distinct=distinct, use_numba=use_numba)
 
         # The `pd.DataFrame.groupby.indices` dict holds the row indices of the group
         data_mask = groupby.indices[key]

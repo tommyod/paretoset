@@ -10,6 +10,7 @@ __version__ = "1.0.0"
 
 import sys
 from paretoset.user_interface import paretoset, paretorank
+from paretoset.algorithms_numpy import crowding_distance
 
 
 def run_tests():

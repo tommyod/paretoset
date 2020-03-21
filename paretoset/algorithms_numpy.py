@@ -88,7 +88,7 @@ def paretoset_efficient(costs, distinct=True):
     return is_efficient_mask
 
 
-def pareto_rank_naive(costs, distinct=True):
+def pareto_rank_naive(costs, distinct=True, use_numba=True):
     """Naive implementation of Pareto ranks."""
 
     n_costs, n_objectives = costs.shape
@@ -100,7 +100,7 @@ def pareto_rank_naive(costs, distinct=True):
     while np.sum(remaining) > 0:
 
         # Mark the costs that have rank `i`
-        frontier_mask = paretoset.user_interface.paretoset(costs[remaining], distinct=distinct)
+        frontier_mask = paretoset.user_interface.paretoset(costs[remaining], distinct=distinct, use_numba=use_numba)
 
         # Processed costs in this iteration (not processed already, and in the frontier)
         processed[np.logical_not(processed)] = frontier_mask
@@ -116,16 +116,34 @@ def pareto_rank_naive(costs, distinct=True):
 
 
 def crowding_distance(costs):
-    """
+    """Compute the crowding distance of (non-NaN) numerical data.
+    
+    The input data in `costs` must be a NumPy ndarray of shape 
+    (observations, objectives). The user is responsible for dealing with NaN 
+    values, duplicate rows and constant columns *before* calling this function. 
 
     Parameters
     ----------
-    costs
+    costs : np.ndarray
+        Numerical data of shape (observations, objectives).
 
     Returns
     -------
-
+    distances : np.ndarray
+        The crowding distance of each observation (row).
+        
+    Examples
+    --------
+    >>> import numpy as np
+    >>> costs = np.array([1, 3, 5, 9, 11]).reshape(-1, 1)
+    >>> crowding_distance(costs)
+    array([inf, 0.4, 0.6, 0.6, inf])
     """
+    msg = "The `costs` argument must be np.ndarray of shape (observations, objectives)"
+    if not isinstance(costs, np.ndarray):
+        raise ValueError(msg)
+    if not costs.ndim == 2:
+        raise ValueError(msg)
 
     # =============================================================================
     # SETUP ARRAYS USED FOR COMPUTATION
