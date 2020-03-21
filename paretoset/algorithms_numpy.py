@@ -164,8 +164,6 @@ def crowding_distance(costs):
 
     # Create the full matrix of differences
     diffs = np.vstack((infinity_row, diffs, infinity_row))
-    if not diffs.shape == costs.shape:
-        print(diffs.shape, costs.shape)
     assert diffs.shape == costs.shape
 
     # Prepare a matrix of reverse-sorted indices
