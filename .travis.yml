@@ -17,7 +17,7 @@ before_script:
     - pip install --requirement requirements.txt # Install development requirements
 
 script:
-    - # flake8 --show-source --ignore=F811,W293,W391,W292,W291,E252,W503,E203 --max-line-length=120 --exclude='conf.py,__init__.py'
+    - flake8 --show-source --ignore=F811,W293,W391,W292,W291,E252,W503,E203 --max-line-length=120 --exclude='conf.py,__init__.py'
     - black . --check -l 120
     - # mypy paretoset/*.py --ignore-missing-imports --show-error-context
     - pytest paretoset --doctest-modules --color=yes # Run the tests

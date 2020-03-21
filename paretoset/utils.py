@@ -14,7 +14,7 @@ def user_has_package(package_name):
 
 def validate_inputs(costs, sense=None):
     """Sanitize user inputs for the `paretoset` function.
-    
+
     Examples
     --------
     >>> costs, sense = validate_inputs([1, 2, 3])
@@ -22,7 +22,7 @@ def validate_inputs(costs, sense=None):
     array([[1],
            [2],
            [3]])
-    
+
     """
 
     # The input is an np.ndarray
@@ -65,7 +65,7 @@ def validate_inputs(costs, sense=None):
         raise TypeError("`sense` parameter must be a sequence of strings.")
     sense = [s.lower() for s in sense]
 
-    sense_map = {"min": "min", "minimum": "min", "max": "max", "maximum": "max", "diff": "diff", "difference": "diff"}
+    sense_map = {"min": "min", "minimum": "min", "max": "max", "maximum": "max", "diff": "diff", "different": "diff"}
 
     sense = [sense_map.get(s) for s in sense]
 

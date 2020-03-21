@@ -1,7 +1,4 @@
 import numpy as np
-import collections
-
-
 import paretoset.user_interface  # Import like this to avoid circular import issues
 
 
@@ -25,7 +22,8 @@ def paretoset_naive(costs, distinct=True):
     for i in range(n_costs):
         this_cost = costs[i, :]
 
-        at_least_as_good = np.all(costs <= this_cost, axis=1)
+        # Here `NOT(ANY(a_i > b_i))` is equal to ALL(a_i <= b_i), but faster.
+        at_least_as_good = np.logical_not(np.any(costs > this_cost, axis=1))
         any_better = np.any(costs < this_cost, axis=1)
 
         dominated_by = np.logical_and(at_least_as_good, any_better)
@@ -87,7 +85,7 @@ def paretoset_efficient(costs, distinct=True):
     return is_efficient_mask
 
 
-def pareto_rank_naive(costs, distinct=True):
+def pareto_rank_naive(costs, distinct=True, use_numba=True):
     """Naive implementation of Pareto ranks."""
 
     n_costs, n_objectives = costs.shape
@@ -99,7 +97,7 @@ def pareto_rank_naive(costs, distinct=True):
     while np.sum(remaining) > 0:
 
         # Mark the costs that have rank `i`
-        frontier_mask = paretoset.user_interface.paretoset(costs[remaining], distinct=distinct)
+        frontier_mask = paretoset.user_interface.paretoset(costs[remaining], distinct=distinct, use_numba=use_numba)
 
         # Processed costs in this iteration (not processed already, and in the frontier)
         processed[np.logical_not(processed)] = frontier_mask
@@ -115,37 +113,88 @@ def pareto_rank_naive(costs, distinct=True):
 
 
 def crowding_distance(costs):
-    """
+    """Compute the crowding distance of (non-NaN) numerical data.
+
+    The input data in `costs` must be a NumPy ndarray of shape
+    (observations, objectives). The user is responsible for dealing with NaN
+    values, duplicate rows and constant columns *before* calling this function.
 
     Parameters
     ----------
-    costs
+    costs : np.ndarray
+        Numerical data of shape (observations, objectives).
 
     Returns
     -------
+    distances : np.ndarray
+        The crowding distance of each observation (row).
 
+    Examples
+    --------
+    >>> import numpy as np
+    >>> costs = np.array([1, 3, 5, 9, 11]).reshape(-1, 1)
+    >>> crowding_distance(costs)
+    array([inf, 0.4, 0.6, 0.6, inf])
     """
+    msg = "The `costs` argument must be np.ndarray of shape (observations, objectives)"
+    if not isinstance(costs, np.ndarray):
+        raise ValueError(msg)
+    if not costs.ndim == 2:
+        raise ValueError(msg)
+
+    # =============================================================================
+    # SETUP ARRAYS USED FOR COMPUTATION
+    # =============================================================================
+
+    # Get the shape of the inputs
     n_costs, n_objectives = costs.shape
+    if n_costs <= 2:
+        return np.ones(n_costs) * np.inf
+
+    # Prepare the distance matrix
     distances = np.zeros_like(costs, dtype=np.float)  # Must use floats to allow np.inf
 
-    indices_reversed = np.zeros(n_costs, dtype=np.int)  # Used to inverse the sort
+    # Used several times below, so pre-compute it here
+    arange_objectives = np.arange(n_objectives)
 
-    for j in range(n_objectives):
+    # Used to inverse the sort
+    sorted_inds_reversed = np.zeros(costs.shape, dtype=np.int)
 
-        sorted_inds = np.argsort(costs[:, j])
-        sorted_column = costs[sorted_inds, j]
+    # =============================================================================
+    # PERFORM THE COMPUTATION
+    # =============================================================================
 
-        # Compute the diff of a_i as a_{i+1} - a_{i-1}
-        diffs = sorted_column[2:] - sorted_column[:-2]
+    # Sort every column individually
+    sorted_inds = np.argsort(costs, axis=0)
+    sorted_matrix = np.take_along_axis(costs, sorted_inds, axis=0)
 
-        # Add infinity to the bounary values
-        diffs = np.concatenate((np.array([np.inf]), diffs, np.array([np.inf])))
+    # Compute the diff of a_i as a_{i+1} - a_{i-1}
+    diffs = sorted_matrix[2:, :] - sorted_matrix[:-2, :]
 
-        # Reverse the sort and add values to the indices
-        indices_reversed[sorted_inds] = np.arange(n_costs)
-        distances[:, j] = np.take_along_axis(diffs, indices_reversed, axis=0)
+    # Compute max minus min for each column, using the already sorted matrix
+    max_minus_min = sorted_matrix[-1, :] - sorted_matrix[0, :]
 
-    return distances
+    # Bottom and top rows are set to infinity - these points have 1 neighbor
+    infinity_row = (np.ones(n_objectives) * np.inf).reshape(1, -1)
+
+    # Create the full matrix of differences
+    diffs = np.vstack((infinity_row, diffs, infinity_row))
+    assert diffs.shape == costs.shape
+
+    # Prepare a matrix of reverse-sorted indices
+    index = sorted_inds, arange_objectives
+
+    # Equivalent to: np.outer(np.arange(n_costs), np.ones(n_objectives))
+    sorted_inds_reversed[index] = np.tile(np.arange(n_costs), (n_objectives, 1)).T
+
+    # Distances (diffs) in original data order
+    distances = diffs[sorted_inds_reversed, arange_objectives]
+
+    # Divide each column by MAX minus MIN to normalize
+    distances = np.divide(distances, max_minus_min, out=distances)
+
+    # Sum over each row, divide by number of columns and return
+    return distances.sum(axis=1) / n_objectives
 
 
 if __name__ == "__main__":
@@ -155,11 +204,4 @@ if __name__ == "__main__":
 
 if __name__ == "__main__":
 
-    costs = np.random.randn(1_00, 2)
-    import time as time
-
-    st = time.time()
-    crowding_distance(costs)
-    print(time.time() - st)
-
-    print(crowding_distance(costs)[0, 0])
+    pass

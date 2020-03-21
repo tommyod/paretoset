@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Compute the Pareto (non-dominated) set, i.e., skyline operator/query. 
+Compute the Pareto (non-dominated) set, i.e., skyline operator/query.
 """
 
 # We use semantic versioning
 # See: https://semver.org/
-__version__ = "1.0.0"
+__version__ = "1.1.0"
+__author__ = "tommyod"
 
 import sys
 from paretoset.user_interface import paretoset, paretorank
+from paretoset.algorithms_numpy import crowding_distance
 
 
 def run_tests():
