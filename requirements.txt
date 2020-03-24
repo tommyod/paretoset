@@ -12,3 +12,4 @@ pep8
 pytest
 setuptools
 sphinx
+recommonmark
