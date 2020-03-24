@@ -12,6 +12,7 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
+import os
 from paretoset import __version__
 
 # import os
@@ -56,8 +57,8 @@ templates_path = ["_templates"]
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-# source_suffix = ['.rst', '.md']
-source_suffix = ".rst"
+source_suffix = [".rst", ".md"]
+# source_suffix = ".rst"
 
 # The master toctree document.
 master_doc = "index"
@@ -78,12 +79,20 @@ exclude_patterns = ["_build"]
 pygments_style = "sphinx"
 
 
+# https://github.com/readthedocs/recommonmark
+source_parsers = {
+    ".md": "recommonmark.parser.CommonMarkParser",
+}
+
+
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "alabaster"
+
+html_theme_path = [os.path.join(os.path.abspath("."), "theme")]
+html_theme = "alabaster"  # "guzzle_sphinx_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -105,7 +114,7 @@ html_theme_options = {
     "head_font_family": '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,\
         "Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji"\
         ,"Segoe UI Symbol"',
-    "page_width": "940px",
+    "page_width": "1380px",
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -122,7 +131,8 @@ html_static_path = ["_static"]
 # 'searchbox.html']``.
 #
 # html_sidebars = {}
-
+html_sidebars = {"**": ["globaltoc.html", "relations.html", "sourcelink.html", "searchbox.html"]}
+html_sidebars = {}
 
 # -- Options for HTMLHelp output ---------------------------------------------
 
