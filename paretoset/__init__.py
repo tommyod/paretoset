@@ -6,7 +6,7 @@ Compute the Pareto (non-dominated) set, i.e., skyline operator/query.
 
 # We use semantic versioning
 # See: https://semver.org/
-__version__ = "1.1.1"
+__version__ = "1.1.2"
 __author__ = "tommyod"
 
 import sys
