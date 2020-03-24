@@ -57,8 +57,8 @@ templates_path = ["_templates"]
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-source_suffix = ['.rst', '.md']
-#source_suffix = ".rst"
+source_suffix = [".rst", ".md"]
+# source_suffix = ".rst"
 
 # The master toctree document.
 master_doc = "index"
@@ -81,7 +81,7 @@ pygments_style = "sphinx"
 
 # https://github.com/readthedocs/recommonmark
 source_parsers = {
-   '.md': 'recommonmark.parser.CommonMarkParser',
+    ".md": "recommonmark.parser.CommonMarkParser",
 }
 
 
@@ -92,7 +92,7 @@ source_parsers = {
 #
 
 html_theme_path = [os.path.join(os.path.abspath("."), "theme")]
-html_theme = "alabaster" # "guzzle_sphinx_theme"
+html_theme = "alabaster"  # "guzzle_sphinx_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -131,7 +131,7 @@ html_static_path = ["_static"]
 # 'searchbox.html']``.
 #
 # html_sidebars = {}
-html_sidebars = { '**': ['globaltoc.html', 'relations.html', 'sourcelink.html', 'searchbox.html'] }
+html_sidebars = {"**": ["globaltoc.html", "relations.html", "sourcelink.html", "searchbox.html"]}
 html_sidebars = {}
 
 # -- Options for HTMLHelp output ---------------------------------------------
