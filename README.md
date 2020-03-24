@@ -10,6 +10,15 @@ There are two common ways to optimize a function of several variables:
 The disadvantage of scalarization is that objectives must be weighted a priori.
 The Pareto set contains every value that could be obtained by scalarization, but also values possibly not found by scalarization.
 
+## Installation
+
+The software is available through GitHub, and through [PyPI](https://pypi.org/project/paretoset/).
+You may install the software using `pip`.
+
+```bash
+pip install paretoset
+```
+
 ## Examples - Skyline queries for data analysis and insight
 
 ### Hotels that are cheap and close to the beach
@@ -82,15 +91,6 @@ efficient_solutions = [solution for (solution, m) in zip(solutions, mask) if m]
 ```
 
 ![](https://raw.githubusercontent.com/tommyod/paretoset/master/scripts/example_optimization.png)
-
-## Installation
-
-The software is available through GitHub, and through [PyPI](https://pypi.org/project/paretoset/).
-You may install the software using `pip`.
-
-```bash
-pip install paretoset
-```
 
 ## Contributing
 
