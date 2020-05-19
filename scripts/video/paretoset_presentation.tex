@@ -1,0 +1,401 @@
+% -------------------------------------------------------------------------
+% Setup
+% -------------------------------------------------------------------------
+\documentclass[11pt, aspectratio=149]{beamer}
+% Options for aspectratio: 1610, 149, 54, 43 and 32, 169
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}% Alternative: 'norsk'
+\usepackage[expansion=false]{microtype}% Fixes to make typography better
+\usecolortheme{beaver} % Decent options: beaver, rose, crane
+\usepackage{listings}% To include source-code
+\usepackage{booktabs}% Professional tables
+\usefonttheme{serif}
+\usepackage{mathptmx}
+\usepackage[scaled=0.9]{helvet}
+\usepackage{courier}
+
+\title{Analyzing data with the Pareto set}
+\subtitle{A graphical tutorial with examples}
+\date{\today}
+\author{tommyod @ GitHub}
+
+% -------------------------------------------------------------------------
+% Package imports
+% -------------------------------------------------------------------------
+\usepackage{etoolbox}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage[sharp]{easylist}
+\usepackage{multicol}
+\usepackage{minted}
+
+
+\usefonttheme{professionalfonts}
+\usepackage{fontspec}
+\setmainfont{Open Sans}
+\setsansfont{Open Sans}
+\setmonofont{Ubuntu Mono}
+\usefonttheme{serif}
+
+%gets rid of bottom navigation bars
+\setbeamertemplate{footline}[frame number]{}
+
+%gets rid of bottom navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+% Set up colors to be used
+\definecolor{purered}{RGB}{31,119,180}
+\definecolor{titlered}{RGB}{31,119,180}
+\definecolor{bggray}{RGB}{242,242,242}
+\definecolor{bggraydark}{RGB}{217,217,217}
+
+% Change the default colors
+
+\setbeamercolor*{title}{bg=bggray,fg=titlered}
+\AtBeginEnvironment{theorem}{%
+	\setbeamercolor{block title}{fg=titlered, bg=bggraydark}
+	\setbeamercolor{block body}{fg=black,bg=bggray}
+}
+\AtBeginEnvironment{proof}{%
+	\setbeamercolor{block title}{bg=bggraydark}
+	\setbeamercolor{block body}{fg=black,bg=bggray}
+}
+\AtBeginEnvironment{example}{%
+	\setbeamercolor{block title example}{bg=bggraydark}
+	\setbeamercolor{block body example}{fg=black,bg=bggray}
+}
+\AtBeginEnvironment{definition}{%
+	\setbeamercolor{block title}{bg=bggraydark}
+	\setbeamercolor{block body}{fg=black,bg=bggray}
+}
+
+\setbeamercolor{block title example}{bg=bggraydark}
+\setbeamercolor{block body example}{fg=black,bg=bggray}
+\setbeamercolor{block title}{bg=bggraydark}
+\setbeamercolor{block body}{fg=black,bg=bggray}
+
+\setbeamercolor{frametitle}{fg=titlered,bg=bggray}
+\setbeamercolor{section in head/foot}{bg=black}
+\setbeamercolor{author in head/foot}{bg=black}
+\setbeamercolor{date in head/foot}{fg=titlered}
+
+
+% Spacing for lsits
+\newcommand{\listSpace}{0.4em}
+
+% Theorems, equations, definitions setup
+\theoremstyle{plain}
+
+\usepackage{etoolbox}
+\usepackage{lipsum}
+
+\makeatletter
+\patchcmd{\beamer@sectionintoc}
+{\vfill}
+{\vskip\itemsep}
+{}
+{}
+\makeatother  
+
+\AtBeginSection[]{
+	\begin{frame}
+		\vfill
+		\centering
+		\begin{beamercolorbox}[sep=8pt,center,shadow=false,rounded=false]{title}
+			\usebeamerfont{title}\insertsectionhead\par%
+		\end{beamercolorbox}
+		\vfill
+	\end{frame}
+}
+
+% -------------------------------------------------------------------------
+% Document start
+% -------------------------------------------------------------------------
+\begin{document}
+\maketitle
+
+% -------------------------------------------------------------------------
+
+\section{Motivating example: renting an apartment}
+
+% -------------------------------------------------------------------------
+\begin{frame}[fragile, t]{The data set of apartments}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.8\linewidth]{apartments1.pdf}
+	\end{figure}
+	Consider a data set of $30$ apartments. Which apartments are \emph{best}?
+	\vfill
+\end{frame}
+
+% -------------------------------------------------------------------------
+\begin{frame}[fragile, t]{General directions}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.8\linewidth]{apartments2.pdf}
+	\end{figure}
+	Apartments with a high price and low square meters are obviously bad.
+	Informally: we want to stay away from the upper-left corner.
+	\vfill
+\end{frame}
+
+% -------------------------------------------------------------------------
+\begin{frame}[fragile, t]{Scalarization}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.8\linewidth]{apartments3.pdf}
+	\end{figure}
+	We can choose $\lambda \in [0, 1]$ and minimize a weighted sum of features:
+	\begin{equation*}
+		f(\text{price}, \text{sqm}) = \lambda \text{price} + (1 -\lambda) (-\text{sqm})
+	\end{equation*}
+	\vfill
+\end{frame}
+
+% -------------------------------------------------------------------------
+\begin{frame}[fragile, t]{Scalarization}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.8\linewidth]{apartments4.pdf}
+	\end{figure}
+	We can choose $\lambda \in [0, 1]$ and minimize a weighted sum of features:
+	\begin{equation*}
+	f(\text{price}, \text{sqm}) = \lambda \text{price} + (1 -\lambda) (-\text{sqm})
+	\end{equation*}
+	\vfill
+\end{frame}
+
+% -------------------------------------------------------------------------
+\begin{frame}[fragile, t]{Disadvantages of scalarization}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.8\linewidth]{apartments5.pdf}
+	\end{figure}
+	The parameter $\lambda$ must be chosen a priori.
+	Some interesting apartments cannot be found.
+	In higher dimensions:
+	\begin{equation*}
+	\text{minimize} \quad f(\mathbf{x}) = \sum_i \lambda_i x_i, \quad \text{subject to} \quad \sum_i \lambda_i = 1.
+	\end{equation*}
+	\vfill
+\end{frame}
+
+% -------------------------------------------------------------------------
+\begin{frame}[fragile, t]{A better approach: Pareto domination}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.8\linewidth]{apartments6.pdf}
+	\end{figure}
+	Consider apartment $\mathbf{x}$ shown in black.
+\end{frame}
+
+% -------------------------------------------------------------------------
+\begin{frame}[fragile, t]{A better approach: Pareto domination}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.8\linewidth]{apartments7.pdf}
+	\end{figure}
+	The shaded region is \emph{dominated} by $\mathbf{x}$, since they have higher price and fewer square meters.
+	Apartment $\mathbf{x}$ is unambiguously better. 
+\end{frame}
+
+% -------------------------------------------------------------------------
+\begin{frame}[fragile, t]{A better approach: Pareto domination}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.8\linewidth]{apartments8.pdf}
+	\end{figure}
+	The dominated apartments can safely be moved.
+	If $\mathbf{x}$ dominates $\mathbf{y}$, there is no reason to prefer $\mathbf{y}$ over $\mathbf{x}$.
+\end{frame}
+
+% -------------------------------------------------------------------------
+\begin{frame}[fragile, t]{A better approach: Pareto domination}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.8\linewidth]{apartments9.pdf}
+	\end{figure}
+	The size of the data set is reduced from $30$ to $18$ apartments.
+\end{frame}
+
+% -------------------------------------------------------------------------
+\begin{frame}[fragile, t]{The Pareto set}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.8\linewidth]{apartments10.pdf}
+	\end{figure}
+	The \emph{Pareto set} consists of apartments not dominated by any other apartment.
+\end{frame}
+
+% -------------------------------------------------------------------------
+\begin{frame}[fragile, t]{The Pareto set}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.8\linewidth]{apartments10.pdf}
+	\end{figure}
+	The \emph{Pareto set} is also called the ``Pareto frontier'', ``skyline'' or the ``efficient solutions.''
+\end{frame}
+
+\section{Definitions}
+
+% -------------------------------------------------------------------------
+\begin{frame}[fragile, t]{Domination}
+				\begin{figure}
+					\centering
+					\includegraphics[width=0.8\linewidth]{domination.pdf}
+				\end{figure}
+	We say that $\mathbf{x}$ \emph{dominates} $\mathbf{y}$ if:
+	\begin{easylist}
+		# In all dimensions $i$, $\mathbf{x}$ is \emph{at least as good} as $\mathbf{y}$.
+		# In at least one dimension $i$, $\mathbf{x}$ is \emph{better} than $\mathbf{y}$.
+	\end{easylist}
+\end{frame}
+
+% -------------------------------------------------------------------------
+\begin{frame}[fragile, t]{Domination}
+	\begin{figure}
+		\centering
+		\includegraphics[width=0.8\linewidth]{domination.pdf}
+	\end{figure}
+	If $\mathbf{x}$ dominates $\mathbf{y}$ in a minimization problem, we write $\mathbf{x} \prec \mathbf{y}$.
+	
+	\textbf{Example.} Clearly $(1, 3) \prec (2, 5)$. The points $(1, 3)$ and $(3, 1)$ are \emph{incomparable}, since $(1, 3) \nsucc (3, 1)$ and $(1, 3) \nprec (3, 1)$.
+\end{frame}
+
+
+\section{Example: Buying a new computer}
+
+% -------------------------------------------------------------------------
+\begin{frame}[fragile, t]{Computers data set}
+	\footnotesize 
+\begin{tabular}{lrrrrr}
+	\toprule
+	name &  screen &  RAM &  HDD &  weight &  price \\
+	\midrule
+	Apple MacBook Air 13,3 128GB &    13.3 &    8 &  128 &     NaN &   9990 \\
+	Asus ZenBook Pure UX430UN-PURE2 &    14.0 &    8 &  256 &   1.300 &   7999 \\
+	HP Pavilion Gaming 15-cx0015no &    15.6 &    8 &  256 &   2.220 &   5999 \\
+	Huawei D15 (53010TTV) &    14.0 &    8 &  256 &   1.530 &   5495 \\
+	Apple MacBook Air 13.3 256GB &    13.3 &    8 &  256 &   1.290 &  12495 \\
+	Asus Chromebook C523 &    15.6 &    4 &   32 &   1.430 &   3495 \\
+	Huawei MateBook 13 (18140) &    13.0 &    8 &  256 &     NaN &   8995 \\
+	Asus ZenBook UX433FN-A6094T &    14.0 &    8 &  256 &   1.300 &   7999 \\
+	Microsoft Surface Laptop 2 &    13.5 &    8 &  128 &   1.283 &   7999 \\
+	Lenovo Ideapad S145 (81W80028MX) &    15.6 &    8 &  256 &   1.850 &   4690 \\
+	Huawei MateBook 13 (51204) &    13.0 &    8 &  512 &   1.300 &   9995 \\
+	Apple MacBook Air (Mid 2017) &    13.3 &    8 &  128 &   1.350 &   9199 \\
+	Acer Nitro 5 (NH.Q5XED.018) &    15.6 &   16 &  512 &   2.200 &   8499 \\
+	\bottomrule
+\end{tabular}
+\normalsize
+
+\vspace*{1em}
+A data set with 13 computers from April 2020.
+\end{frame}
+
+
+\begin{frame}[fragile, t]{Pareto set of computers: RAM, HDD and price}
+Computed using the \texttt{paretoset} package in Python:
+\vspace*{1em}
+\begin{verbatim}
+from paretoset import paretoset
+mask = paretoset(df_computers[["RAM", "HDD", "price"]], 
+                 sense=[max, max, min])
+df_computers[mask] # Reduced to 3 / 13 computers
+\end{verbatim}
+\vspace*{1em}
+
+\footnotesize 
+\begin{tabular}{lrrrrr}
+	\toprule
+	name &  screen &  RAM &  HDD &  weight &  price \\
+	\midrule
+	Asus Chromebook C523 &    15.6 &    4 &   32 &    1.43 &   3495 \\
+	Lenovo Ideapad S145 (81W80028MX) &    15.6 &    8 &  256 &    1.85 &   4690 \\
+	Acer Nitro 5 (NH.Q5XED.018) &    15.6 &   16 &  512 &    2.20 &   8499 \\
+	\bottomrule
+\end{tabular}
+\normalsize
+\end{frame}
+
+
+\begin{frame}[fragile, t]{Pareto set of computers: RAM, HDD, weight and price}
+	\begin{verbatim}	
+mask = paretoset(df_computers[["RAM", "HDD", "weight", "price"]], 
+                 sense=[max, max, min, min])
+	
+df_computers[mask] # Reduced to 9 / 13 computers
+\end{verbatim}
+	\vspace*{1em}
+	
+	\footnotesize 
+\begin{tabular}{lrrrrr}
+	\toprule
+	name &  screen &  RAM &  HDD &  weight &  price \\
+	\midrule
+	Asus ZenBook Pure UX430UN-PURE2 &    14.0 &    8 &  256 &   1.300 &   7999 \\
+	Huawei D15 (53010TTV) &    14.0 &    8 &  256 &   1.530 &   5495 \\
+	Asus Chromebook C523 &    15.6 &    4 &   32 &   1.430 &   3495 \\
+	Huawei MateBook 13 (18140) &    13.0 &    8 &  256 &     \textbf{NaN} &   8995 \\
+	Asus ZenBook UX433FN-A6094T &    14.0 &    8 &  256 &   1.300 &   7999 \\
+	Microsoft Surface Laptop 2 &    13.5 &    8 &  128 &   1.283 &   7999 \\
+	Lenovo Ideapad S145 (81W80028MX) &    15.6 &    8 &  256 &   1.850 &   4690 \\
+	Huawei MateBook 13 (51204) &    13.0 &    8 &  512 &   1.300 &   9995 \\
+	Acer Nitro 5 (NH.Q5XED.018) &    15.6 &   16 &  512 &   2.200 &   8499 \\
+	\bottomrule
+\end{tabular}
+
+
+	\normalsize
+\end{frame}
+
+
+
+\section{The \texttt{paretoset} Python package}
+% -------------------------------------------------------------------------
+\begin{frame}[fragile, t]{\texttt{paretoset}}
+	If you're interested in Pareto set computations in Python, I've written a library.
+	\vspace{1em}
+	\begin{easylist}[itemize]
+		\ListProperties(Space=\listSpace, Space*=\listSpace)
+		# GitHub: \url{https://github.com/tommyod/paretoset}
+		# PyPI: \url{https://pypi.org/project/paretoset}
+	\end{easylist}
+	\vfill
+	
+	\textbf{Features:}
+	\vspace{1em}
+	\begin{easylist}[itemize]
+		\ListProperties(Space=\listSpace, Space*=\listSpace)
+		# Support for pandas DataFrames and NumPy ndarrays.
+		# Support for MIN, MAX and DIFFERENT over dimensions.
+		# Return distinct or non-distinct data.
+		# Fast: handles a million rows in less than a second.
+		# Functions related to Pareto sets, e.g. Pareto ranks.
+	\end{easylist}
+	\vfill
+\end{frame}
+
+
+% -------------------------------------------------------------------------
+%\begin{frame}[fragile, t]{References}
+%	References for further reading.
+%	\vspace{1em}
+%	\begin{easylist}[itemize]
+%		\ListProperties(Space=\listSpace, Space*=\listSpace)
+%		# Wikipedia article on Pareto efficiency.
+%		# Boyd et al. \emph{Convex Optimization}
+%		# Boyd et al. \emph{Convex Optimization}
+%		# Börzsönyi et al. \emph{The Skyline Operator}
+%	\end{easylist}
+%\end{frame}
+
+\end{document}
