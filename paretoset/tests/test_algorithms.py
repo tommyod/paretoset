@@ -178,8 +178,7 @@ class TestParetoSetImplementations:
 class TestParetoRankImplementations:
     @pytest.mark.parametrize("algorithm, seed", itertools.product(paretorank_algorithms, seeds))
     def test_paretorank_on_random_instances(self, algorithm, seed):
-        """
-        """
+        """"""
         # Generate random data
         np.random.seed(42)
         costs = np.random.randint(low=-2, high=2, size=(99, 3))
@@ -192,8 +191,7 @@ class TestParetoRankImplementations:
 
     @pytest.mark.parametrize("algorithm", paretorank_algorithms)
     def test_paretorank_on_degenerate_case(self, algorithm):
-        """
-        """
+        """"""
         # Generate random data
         costs = np.ones((9, 1))
 

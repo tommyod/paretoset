@@ -95,7 +95,11 @@ len(df_computers)
 # In[5]:
 
 
-print(df_computers.to_latex(index=False,))
+print(
+    df_computers.to_latex(
+        index=False,
+    )
+)
 
 
 # In[6]:
@@ -103,7 +107,11 @@ print(df_computers.to_latex(index=False,))
 
 mask = paretoset(df_computers[["RAM", "HDD", "price"]], sense=[max, max, min])
 
-print(df_computers[mask].to_latex(index=False,))
+print(
+    df_computers[mask].to_latex(
+        index=False,
+    )
+)
 
 
 # In[7]:
@@ -111,7 +119,11 @@ print(df_computers[mask].to_latex(index=False,))
 
 mask = paretoset(df_computers[["RAM", "HDD", "weight", "price"]].fillna(0), sense=[max, max, min, min], distinct=True)
 
-print(df_computers[mask].to_latex(index=False,))
+print(
+    df_computers[mask].to_latex(
+        index=False,
+    )
+)
 
 
 # In[8]:
@@ -119,7 +131,11 @@ print(df_computers[mask].to_latex(index=False,))
 
 mask = paretoset(df_computers[["RAM", "HDD", "weight", "price"]].fillna(0), sense=[max, max, min, min], distinct=False)
 
-print(df_computers[mask].to_latex(index=False,))
+print(
+    df_computers[mask].to_latex(
+        index=False,
+    )
+)
 
 
 # In[ ]:
