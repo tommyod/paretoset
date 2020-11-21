@@ -2,14 +2,6 @@
 
 Compute the Pareto (non-dominated) set, i.e., skyline operator/query.
 
-There are two common ways to optimize a function of several variables: 
-
-- **Scalarization** combines objectives by a weighted sum: this gives a linear ordering and *single a minimum value*.
-- The **Pareto set** contains efficient (non-dominated) solutions: this gives a partial ordering and *a set of minimal values*.
-
-The disadvantage of scalarization is that objectives must be weighted a priori.
-The Pareto set contains every value that could be obtained by scalarization, but also values possibly not found by scalarization.
-
 ## Installation
 
 The software is available through GitHub, and through [PyPI](https://pypi.org/project/paretoset/).
