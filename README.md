@@ -1,4 +1,4 @@
-# paretoset [![](https://travis-ci.com/tommyod/paretoset.svg?branch=master)](https://travis-ci.com/tommyod/paretoset) [![](https://badge.fury.io/py/paretoset.svg)](https://pypi.org/project/paretoset/) [![](https://pepy.tech/badge/paretoset)](https://pepy.tech/project/paretoset) [![](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
+# paretoset [![Build Status](https://github.com/tommyod/paretoset/workflows/Python%20CI/badge.svg?branch=master) [![](https://badge.fury.io/py/paretoset.svg)](https://pypi.org/project/paretoset/) [![](https://pepy.tech/badge/paretoset)](https://pepy.tech/project/paretoset) [![](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
 Compute the Pareto (non-dominated) set, i.e., skyline operator/query.
 
