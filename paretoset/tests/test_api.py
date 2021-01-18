@@ -72,11 +72,11 @@ class TestReadmeExamples:
             {
                 "col1": ["a", "a", "a", "a", "a", "b", "b", "b", "b"],
                 "col2": ["A", "A", "B", "B", "B", "A", "B", "B", "B"],
-                "col3": [-1, 0, 0, 1, 1, -2, 1, 2, 1],
-                "col4": [-1, 1, 1, 1, 0, -2, 0, 0, 0],
+                "col3": [-1,  0,  0,  1, 1, -2, 1, 2, 1],
+                "col4": [ 1, -1, -1, -1, 0,  2, 0, 0, 0],
             }
         )
-        sense = ["diff", "diff", "min", "min"]
+        sense = ["diff", "diff", "min", "max"]
         mask = paretoset(df, sense=sense, distinct=True)
         expected = np.array([1, 0, 1, 0, 1, 1, 1, 0, 0], dtype=np.bool_)
         assert np.all(mask == expected)

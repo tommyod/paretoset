@@ -82,24 +82,17 @@ def paretoset(costs, sense=None, distinct=True, use_numba=True):
         if costs.dtype == np.dtype("O"):
             raise TypeError(message.format(costs.dtype))
 
-    # CASE 1: THE ONLY SENSE IS MINIMIZATION
-    # ---------------------------------------
-    if all(s == "min" for s in sense):
+    # No diff columns, use numpy array
+    if not diff_cols:
         if isinstance(costs, pd.DataFrame):
             costs = costs.to_numpy(copy=True)
+        for col in max_cols:
+            costs[:, col] = -costs[:, col]
         return paretoset_algorithm(costs, distinct=distinct)
 
     n_costs, n_objectives = costs.shape
 
-    if not diff_cols:
-        # Its an array
-        if not isinstance(costs, np.ndarray):
-            costs = costs.to_numpy(copy=True)
-        for col in max_cols:
-            costs[:, col] = -costs[:, col]
-
-        return paretoset_algorithm(costs, distinct=distinct)
-
+    # Diff columns are present, use pandas dataframe
     if isinstance(costs, pd.DataFrame):
         df = costs.copy()  # Copy to avoid mutating inputs
         df.columns = np.arange(n_objectives)
@@ -110,7 +103,9 @@ def paretoset(costs, sense=None, distinct=True, use_numba=True):
     assert np.all(df.columns == np.arange(n_objectives))
 
     # If `object` columns are present and they can be converted, do it.
-    for col in max_cols + min_cols:
+    for col in max_cols:
+        df[col] = -pd.to_numeric(df[col], errors="coerce")
+    for col in min_cols:
         df[col] = pd.to_numeric(df[col], errors="coerce")
 
     is_efficient = np.zeros(n_costs, dtype=np.bool_)
