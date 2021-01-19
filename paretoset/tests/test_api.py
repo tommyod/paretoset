@@ -72,8 +72,8 @@ class TestReadmeExamples:
             {
                 "col1": ["a", "a", "a", "a", "a", "b", "b", "b", "b"],
                 "col2": ["A", "A", "B", "B", "B", "A", "B", "B", "B"],
-                "col3": [-1,  0,  0,  1, 1, -2, 1, 2, 1],
-                "col4": [ 1, -1, -1, -1, 0,  2, 0, 0, 0],
+                "col3": [-1, 0, 0, 1, 1, -2, 1, 2, 1],
+                "col4": [1, -1, -1, -1, 0, 2, 0, 0, 0],
             }
         )
         sense = ["diff", "diff", "min", "max"]
@@ -167,6 +167,13 @@ class TestParetoSetAPI:
 
         # Masks are equal
         assert np.all(mask1 == mask2)
+
+    def test_max_and_diff_working_together(self):
+        """Regression test for:
+        https://github.com/tommyod/paretoset/issues/18
+        """
+        mask = paretoset([[2, 0], [1, 0], [0, 1]], sense=["max", "diff"])
+        assert np.all(mask == np.array([True, False, True]))
 
 
 class TestPandasInputs:
