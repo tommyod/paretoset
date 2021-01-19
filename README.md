@@ -89,6 +89,8 @@ efficient_solutions = [solution for (solution, m) in zip(solutions, mask) if m]
 You are very welcome to scrutinize the code and make pull requests if you have suggestions and improvements.
 Your submitted code must be PEP8 compliant, and all tests must pass.
 
+Contributors: [Kartik](https://github.com/kartiksubbarao)
+
 ## Performance
 
 The graph below shows how long it takes to compute the Pareto set.
