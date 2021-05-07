@@ -2,6 +2,8 @@
 
 Compute the Pareto (non-dominated) set, i.e., skyline operator/query.
 
+Watch the YouTube video: [Analyzing data with the Pareto set](https://www.youtube.com/watch?v=rkSmkkzM3ao)
+
 ## Installation
 
 The software is available through GitHub, and through [PyPI](https://pypi.org/project/paretoset/).
