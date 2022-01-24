@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false # Allow one of the matrix builds to fail without failing others
       matrix:
-        python-version: [3.6, 3.7, 3.8]
+        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10']
         
     # The job
     name: Python ${{ matrix.python-version }}
@@ -32,7 +32,7 @@ jobs:
       - name: Run tests and linting
         run: |
           pip install pip wheel setuptools twine pytest --quiet --upgrade
-          pip install -e . # Install the package
+          pip install -e . # Install the package 
           python ./scripts/examples.py
           pip install --requirement requirements.txt --quiet # Install development requirements
           flake8 --show-source --ignore=F811,W293,W391,W292,W291,E252,W503,E203 --max-line-length=120 --exclude='conf.py,__init__.py,scripts/'
