@@ -33,7 +33,7 @@ def get_times(observations, cost_func, algorithm, num_runs):
     """Run a function and get execution times."""
 
     for num_obs in observations:
-        num_obs = 10 ** num_obs
+        num_obs = 10**num_obs
         costs = cost_func(num_obs, objectives)
         runs = []
         for run in range(num_runs):
