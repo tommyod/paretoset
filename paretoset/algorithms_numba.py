@@ -4,7 +4,7 @@ import numba
 
 @numba.jit(nopython=True)
 def any_jitted(costs, cost):
-    """Check if any are smaller over axis 1."""
+    """Check if any costs are smaller than a given cost over axis 1."""
 
     rows, cols = costs.shape
     ans = np.zeros(shape=rows, dtype=np.bool_)
