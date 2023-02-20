@@ -7,7 +7,7 @@ Watch the YouTube video: [Analyzing data with the Pareto set](https://www.youtub
 ## Installation
 
 The software is available through GitHub, and through [PyPI](https://pypi.org/project/paretoset/).
-You may install the software using `pip`.
+You may install the software using `pip`:
 
 ```bash
 pip install paretoset
