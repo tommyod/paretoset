@@ -53,7 +53,6 @@ def paretoset_efficient(costs, distinct=True):
 
     next_point_index = 0  # Next index in the is_efficient array to search for
     while next_point_index < len(costs):
-
         this_cost = costs[next_point_index]
 
         # Two points `a` and `b` are *incomparable* if neither dom(a, b) nor dom(b, a).
@@ -95,7 +94,6 @@ def pareto_rank_naive(costs, distinct=True, use_numba=True):
 
     current_rank = 1
     while np.sum(remaining) > 0:
-
         # Mark the costs that have rank `i`
         frontier_mask = paretoset.user_interface.paretoset(costs[remaining], distinct=distinct, use_numba=use_numba)
 
@@ -203,5 +201,4 @@ if __name__ == "__main__":
     pytest.main(args=[".", "--doctest-modules", "--color", "yes"])
 
 if __name__ == "__main__":
-
     pass
