@@ -1,5 +1,4 @@
 if __name__ == "__main__":
-
     PLOT = False
 
     # ==========================================================================================
@@ -72,7 +71,7 @@ if __name__ == "__main__":
         performers_by_dept = top_performers.groupby("department")
 
         subplot = 1
-        for (group_salespeople, group_performers) in zip(salespeople_by_dept, performers_by_dept):
+        for group_salespeople, group_performers in zip(salespeople_by_dept, performers_by_dept):
             plt.subplot(1, 3, subplot)
 
             department, group_salespeople = group_salespeople

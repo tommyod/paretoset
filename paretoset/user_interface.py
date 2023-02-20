@@ -117,7 +117,6 @@ def paretoset(costs, sense=None, distinct=True, use_numba=True):
 
     # Iteration through the groups
     for key, data in groupby:
-
         # Get the relevant data for the group and compute the efficient points
         relevant_data = data[max_cols + min_cols].to_numpy(copy=True)
         efficient_mask = paretoset_algorithm(relevant_data.copy(), distinct=distinct)
@@ -244,7 +243,6 @@ def paretorank(costs, sense=None, distinct=True, use_numba=True):
 
     # Iteration through the groups
     for key, data in groupby:
-
         # Get the relevant data for the group and compute the efficient points
         relevant_data = data[max_cols + min_cols].to_numpy(copy=True)
         ranks = paretorank_algorithm(relevant_data.copy(), distinct=distinct, use_numba=use_numba)

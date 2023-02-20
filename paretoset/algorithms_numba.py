@@ -69,7 +69,6 @@ def paretoset_jit(costs, distinct=True):
 
     next_point_index = 0  # Next index in the is_efficient array to search for
     while next_point_index < len(costs):
-
         this_cost = costs[next_point_index]
 
         # Keep any point with a lower cost
@@ -145,7 +144,6 @@ def BNL(costs, distinct=True):
     window_changed = True
 
     for i in range(1, n_costs):  # Skip the first row, since it's in the window
-
         # Get the cost for this row
         this_cost = costs[i]
 
@@ -171,14 +169,11 @@ def BNL(costs, distinct=True):
         dominated_inds_window = cost_dominates_window(window, this_cost, window_rows, window_cols)
         # A point in the window is dominated, remove it
         if len(dominated_inds_window) != 0:
-
             # Get the original indices to remove
             to_removes = [is_efficient[k] for k in dominated_inds_window]
             for to_remove in to_removes:
-
                 # Original indices of elements in the window
                 for j, efficient in enumerate(is_efficient):
-
                     # Found a match, remove it
                     if efficient == to_remove:
                         # Move one to the left and decrement
@@ -191,7 +186,6 @@ def BNL(costs, distinct=True):
 
         # Add to window in all cases, except if `distinct` and it's already in the window
         if (not distinct) or (not any_equal_jitted(window, this_cost)):
-
             # Insert the index value of the point in the last position
             is_efficient[num_efficient] = i
             # Increment the number of efficient points
