@@ -122,7 +122,14 @@ def paretoset(costs, sense=None, distinct=True, use_numba=True):
         efficient_mask = paretoset_algorithm(relevant_data.copy(), distinct=distinct)
 
         # The `pd.DataFrame.groupby.indices` dict holds the row indices of the group
-        data_mask = groupby.indices[key]
+        try:
+            data_mask = groupby.indices[key]
+
+        # When we groupby `diff_cols`, which is a list, we get out ('entry',)
+        # but the groupby.indices object wants 'entry'
+        except KeyError:
+            data_mask = groupby.indices[key[0]]
+
         is_efficient[data_mask] = efficient_mask
 
     return is_efficient

@@ -13,7 +13,7 @@ import itertools
 
 
 seeds = list(range(99))
-dtypes = [np.float, np.int]
+dtypes = [float, int]
 bools = [True, False]
 paretoset_algorithms = [paretoset_naive, paretoset_efficient, paretoset_jit, BNL]
 paretorank_algorithms = [pareto_rank_naive]
@@ -250,7 +250,7 @@ class TestParetoRankImplementations:
 class TestCrowdingDistance:
     def test_on_known_instance(self):
         """Test on a small instance computed by hand."""
-        costs = np.array([[1, 2], [3, 9], [5, 3], [9, 1]], dtype=np.float)
+        costs = np.array([[1, 2], [3, 9], [5, 3], [9, 1]], dtype=float)
         dist = crowding_distance(costs)
         assert np.all(dist == np.array([np.inf, np.inf, 0.8125, np.inf]))
 
