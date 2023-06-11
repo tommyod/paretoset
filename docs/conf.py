@@ -106,7 +106,7 @@ html_theme_options = {
     "github_repo": "paretoset",
     "github_button": True,
     "github_banner": True,
-    "travis_button": True,
+    "travis_button": False,
     "show_powered_by": False,
     "font_family": '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,\
         "Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji"\
