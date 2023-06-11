@@ -105,4 +105,3 @@ Gaussian data has only a few observations in the Pareto set, while uniformly dis
 
 - "*The Skyline Operator*" by Börzsönyi et al. introduces the *Skyline Operator* in the database context.
 
-
