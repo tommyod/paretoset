@@ -13,3 +13,4 @@ pytest
 setuptools
 sphinx
 recommonmark
+myst-parser
