@@ -28,7 +28,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           architecture: x64
-          
+
       - name: Run tests and linting
         run: |
           pip install pip wheel setuptools twine pytest --quiet --upgrade
@@ -38,6 +38,11 @@ jobs:
           flake8 --show-source --ignore=F811,W293,W391,W292,W291,E252,W503,E203 --max-line-length=120 --exclude='conf.py,__init__.py,scripts/'
           black . --check -l 120
           pytest paretoset --doctest-modules --color=yes # Run the tests
+          
+      - name: Build documentation
+        run: |
+          sudo apt install pandoc -y
+          sphinx-build docs _built_docs/html -W --keep-going
 
 # ======================= BUILD WHEELS AND UPLOAD TO PYPI ==================================
 
