@@ -184,7 +184,7 @@ class TestPandasInputs:
         mask = paretoset(df)
 
         assert isinstance(mask, np.ndarray)
-        assert mask.dtype == np.bool
+        assert mask.dtype == bool
         assert (df == df_before).all().all()
 
     def test_pandas_with_args(self):
@@ -194,7 +194,7 @@ class TestPandasInputs:
         mask = paretoset(df, sense=[min, max])
 
         assert isinstance(mask, np.ndarray)
-        assert mask.dtype == np.bool
+        assert mask.dtype == bool
         assert (df == df_before).all().all()
 
     def test_pandas_with_diff_arg(self):
@@ -205,23 +205,9 @@ class TestPandasInputs:
         mask = paretoset(df, sense=["min", "max", "diff"])
 
         assert isinstance(mask, np.ndarray)
-        assert mask.dtype == np.bool
+        assert mask.dtype == bool
         assert (df == df_before).all().all()
 
 
 if __name__ == "__main__":
     pytest.main(args=[__file__, "--doctest-modules", "--maxfail=5", "-v", "--cache-clear", "--color", "yes", ""])
-
-    import pandas as pd
-
-    df = pd.DataFrame(
-        {
-            "col1": ["a", "a", "a", "a", "a", "b", "b", "b", "b"],
-            "col2": ["A", "A", "B", "B", "B", "A", "B", "B", "B"],
-            "col3": [-1, 0, 0, 1, 1, -2, 1, 2, 1],
-            "col4": [-1, 1, 1, 1, 0, -2, 0, 0, 0],
-        }
-    )
-    mask = paretoset(df, sense=["diff", "diff", "min", "min"], distinct=True)
-    print(mask)
-    expected = np.array([1, 0, 1, 0, 1, 1, 1, 0, 0], dtype=np.bool_)

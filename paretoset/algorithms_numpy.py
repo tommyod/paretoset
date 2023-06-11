@@ -150,13 +150,13 @@ def crowding_distance(costs):
         return np.ones(n_costs) * np.inf
 
     # Prepare the distance matrix
-    distances = np.zeros_like(costs, dtype=np.float)  # Must use floats to allow np.inf
+    distances = np.zeros_like(costs, dtype=float)  # Must use floats to allow np.inf
 
     # Used several times below, so pre-compute it here
     arange_objectives = np.arange(n_objectives)
 
     # Used to inverse the sort
-    sorted_inds_reversed = np.zeros(costs.shape, dtype=np.int)
+    sorted_inds_reversed = np.zeros(costs.shape, dtype=int)
 
     # =============================================================================
     # PERFORM THE COMPUTATION
