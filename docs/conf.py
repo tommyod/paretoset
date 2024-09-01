@@ -57,8 +57,8 @@ templates_path = ["_templates"]
 
 # The suffix(es) of source filenames.
 source_suffix = {
-    '.rst': 'restructuredtext',
-    '.md': 'markdown',
+    ".rst": "restructuredtext",
+    ".md": "markdown",
 }
 
 # The master toctree document.
@@ -132,7 +132,9 @@ html_theme_options = {
 # 'searchbox.html']``.
 #
 # html_sidebars = {}
-html_sidebars = {"**": ["globaltoc.html", "relations.html", "sourcelink.html", "searchbox.html"]}
+html_sidebars = {
+    "**": ["globaltoc.html", "relations.html", "sourcelink.html", "searchbox.html"]
+}
 html_sidebars = {}
 
 # -- Options for HTMLHelp output ---------------------------------------------
