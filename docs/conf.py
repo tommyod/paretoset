@@ -56,10 +56,10 @@ extensions = [
 templates_path = ["_templates"]
 
 # The suffix(es) of source filenames.
-# You can specify multiple suffix as a list of string:
-#
-source_suffix = [".md"]
-# source_suffix = ".rst"
+source_suffix = {
+    ".rst": "restructuredtext",
+    ".md": "markdown",
+}
 
 # The master toctree document.
 master_doc = "index"
@@ -78,13 +78,6 @@ exclude_patterns = ["_build"]
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
-
-
-# https://github.com/readthedocs/recommonmark
-source_parsers = {
-    ".md": "recommonmark.parser.CommonMarkParser",
-}
-
 
 # -- Options for HTML output -------------------------------------------------
 

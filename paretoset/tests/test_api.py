@@ -4,10 +4,6 @@ import numpy as np
 
 import pytest
 import pandas as pd
-
-
-import pytest
-import numpy as np
 import itertools
 
 
@@ -108,7 +104,7 @@ class TestReadmeExamples:
         mask = paretoset(df, sense=[operator, "diff"], distinct=distinct)
         assert np.any(mask)
 
-    @pytest.mark.parametrize("dtype", [np.int_, np.float_])
+    @pytest.mark.parametrize("dtype", [int, float])
     def test_diff_on_numeric_data(self, dtype):
         """Test that 'diff' works on numeric data."""
         # Generate random data

@@ -21,10 +21,10 @@ jobs:
     steps:
     
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         
       - name: Setup python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
           architecture: x64
@@ -32,7 +32,7 @@ jobs:
       - name: Run tests and linting
         run: |
           pip install pip wheel setuptools twine pytest --quiet --upgrade
-          pip install -e . # Install the package 
+          pip install . # Install the package 
           python ./scripts/examples.py
           pip install --requirement requirements.txt --quiet # Install development requirements
           flake8 --show-source --ignore=F811,W293,W391,W292,W291,E252,W503,E203 --max-line-length=120 --exclude='conf.py,__init__.py,scripts/'
@@ -48,11 +48,12 @@ jobs:
 
       - name: Build package ${{ matrix.python-version }}
         run: |
-          python setup.py sdist bdist_wheel;
+          python -m pip install build;
+          python -m build;
 
       - name: Publish Python distribution to PyPI
         if: github.ref == 'refs/heads/master'
-        uses: pypa/gh-action-pypi-publish@master
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
           skip_existing: true
           user: __token__
