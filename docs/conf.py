@@ -132,9 +132,7 @@ html_theme_options = {
 # 'searchbox.html']``.
 #
 # html_sidebars = {}
-html_sidebars = {
-    "**": ["globaltoc.html", "relations.html", "sourcelink.html", "searchbox.html"]
-}
+html_sidebars = {"**": ["globaltoc.html", "relations.html", "sourcelink.html", "searchbox.html"]}
 html_sidebars = {}
 
 # -- Options for HTMLHelp output ---------------------------------------------
