@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "paretoset"
-dynamic = ["version", "readme", "dependencies"]
+dynamic = ["version", "readme"]
 description = "Compute the Pareto (non-dominated) set, i.e., skyline operator/query."
 authors = [
     {name = "tommyod", email = "tommy.odland@gmail.com"},
@@ -17,8 +17,15 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
 ]
 requires-python = ">=3.8"
+dependencies = ["numba", "numpy", "pandas"]
+
+[project.optional-dependencies]
+dev = ["black", "flake8", "ipython", "mypy", "pep8"]
+docs = ["nbsphinx", "numpydoc", "sphinx", "recommonmark", "myst-parser"]
+test = ["pytest"]
 
 [project.urls]
 Homepage = "https://github.com/tommyod/paretoset"
@@ -27,7 +34,6 @@ Repository = "https://github.com/tommyod/paretoset.git"
 [tool.setuptools.dynamic]
 version = {attr = "paretoset.__version__"}
 readme = {file = ["README.md"], content-type = "text/markdown"}
-dependencies = {file = ["requirements.txt"]}
 
 [tool.setuptools.packages.find]
 where = ["."]
