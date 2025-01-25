@@ -32,7 +32,7 @@ jobs:
       - name: Run tests and linting
         run: |
           pip install pip wheel setuptools twine pytest --quiet --upgrade
-          pip install .[dev,test] # Install the package 
+          pip install .[dev,test]
           python ./scripts/examples.py
           flake8 --show-source --ignore=F811,W293,W391,W292,W291,E252,W503,E203 --max-line-length=120 --exclude='conf.py,__init__.py,scripts/'
           black . --check -l 120
