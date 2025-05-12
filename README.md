@@ -4,6 +4,8 @@ Compute the Pareto (non-dominated) set, i.e., skyline operator/query.
 
 Watch the YouTube video: [Analyzing data with the Pareto set](https://www.youtube.com/watch?v=rkSmkkzM3ao)
 
+Read a blog post: [Multi-Objective Optimization and Pareto Front](https://kunlei.github.io/docs/blog/posts/2024-04-02-pareto-front/)
+
 ## Installation
 
 The software is available through GitHub, and through [PyPI](https://pypi.org/project/paretoset/).
